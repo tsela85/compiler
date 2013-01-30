@@ -99,7 +99,6 @@ void print_heap(){
   "PUSH(FP);" nl
   "MOV(FP,SP);" nl
   ;"MOV(FP,SP);" nl
-  "int i,j;" nl
   body nl
 
 "  POP(FP);
@@ -239,34 +238,22 @@ error:
                            "//shifting the old enviroment" nl
                            "MOV(R1,FPARG(IMM(0))); //R1 <- env" nl
 
-                           "//R2[j] <- R1[i]" nl
-                                        ;                  "for(i=0,j=1;i<"(number->string (- env-size 1))";++i,++j){" nl
-
-
-;                           "PUSH(R15);" nl
-;                           "MOV(R15,IMM(0));" nl
-;                           label-clos-loop":" nl
-;                           "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl
-;                           "INCR(R15);" nl
-;                           "CMP(R15,IMM(" (number->string (- env-size 1)) "));" nl
-;                           "JUMP_LT("label-clos-loop ");" nl
-;                           "POP(R15);" nl
+                           "//LOOP" nl
                            (generate-loop (string-append "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl) "0"
                                           (number->string (- env-size 1)) " 1")
 
-                                        ;                  "}" nl
-                                        ;"MOV(INDD(R1,IMM(1)),R3); //R1[1] <- new env" nl
                            "//moving params from the stack to the first list in env" nl
                            "//allocating space" nl
                            "PUSH(FPARG(IMM(1)));" nl
                            "CALL(MALLOC);" nl
                            "DROP(IMM(1));" nl
                            "MOV(R3,R0); // R3 <- new env[0]" nl
-                                        ;"MOV(R6,FPARG(IMM(1)));//R6 <- counter for the params" nl
-                                        ;"i=R6;"
-                           "for (i=0;i<FPARG(IMM(1));++i) { " nl
-                           "  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]" nl
-                           "}" nl
+
+                           (generate-loop (string-append "MOV(INDD(R3,R15),FPARG((IMM(2+R15)))); //R3[R15] <- param[R15]" nl) "0"
+                                          "FPARG(IMM(1))"   " 1")
+;                           "for (i=0;i<FPARG(IMM(1));++i) { " nl
+;                           "  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]" nl
+;                           "}" nl
                            "MOV(INDD(R2,0),R3); // new env[0] <- R3" nl
                                         ;"MOV(INDD(R1,1),R3); // R1[1] <- R3" nl
                            "PUSH(LABEL("label-clos"));" nl
@@ -337,3 +324,11 @@ error:
 (compile '((lambda (x y z) (if x y z)) #t ((lambda (i) i) 7) 8))
 (trace generate-loop)
 (untrace)
+(compile '((lambda (x) (if x 9 6)) #f))
+(compile '((lambda (x y z) (if x y z)) #f 7 8))
+(compile '((lambda (x y z) (if x y z)) #t ((lambda (i) i) 7) 8))
+(compile '((lambda (x y z) (if x y z)) #t ((lambda (i) i) 7) 8))
+(compile '((lambda (x y z) (if x y z)) ((lambda (m n) n) #t #f) ((lambda (i) i) 7) 8))
+(compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) #t #f) ((lambda (i) i) 7) 8))
+(compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) ((lambda(x) x) #t) #f) ((lambda (i) i) 7) 8))
+(compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) ((lambda(x) x) (if 3 4 5)) #f) ((lambda (i) i) 7) 8))
