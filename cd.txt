@@ -25,3 +25,15 @@ void print_heap(){
 	SHOW(" ",ADDR(i));
 	}
 }
+
+(load "codegen.scm")
+> (compile '((lambda (x) (if x 9 6)) #f))
+> (compile '((lambda (x y z) (if x y z)) #f 7 8))
+> (compile '((lambda (x y z) (if x y z)) #t ((lambda (i) i) 7) 8))
+> (load "codegen.scm")
+> (compile '((lambda (x y z) (if x y z)) #t ((lambda (i) i) 7) 8))
+> (compile '((lambda (x y z) (if x y z)) ((lambda (m n) n) #t #f) ((lambda (i) i) 7) 8))
+> (compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) #t #f) ((lambda (i) i) 7) 8))
+> (compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) ((lambda(x) x) #t) #f) ((lambda (i) i) 7) 8))
+> (compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) ((lambda(x) x) (if 3 4 5) #f) ((lambda (i) i) 7) 8)))
+> (compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) ((lambda(x) x) (if 3 4 5)) #f) ((lambda (i) i) 7) 8))
