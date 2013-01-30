@@ -64,7 +64,7 @@ CALL(MAKE_SOB_INTEGER);
 DROP(IMM(1));
 PUSH(R0);
 //pushing args to stack
-PUSH(1234);
+PUSH(7);
 CALL(MAKE_SOB_INTEGER);
 DROP(IMM(1));
 PUSH(R0);
@@ -79,7 +79,7 @@ MOV(INDD(R0,0),T_CLOSURE);
 MOV(R1,R0); //r1 holds a pointer to the closure struct
 //extending the env by 1
 //allocating space for the new env
-PUSH(IMM(1));
+PUSH(IMM(3));
 CALL(MALLOC);
 DROP(IMM(1));
 MOV(R2,R0); //R2 <- new env
@@ -88,11 +88,11 @@ MOV(R1,FPARG(IMM(0))); //R1 <- env
 //R2[j] <- R1[i]
 PUSH(R15);
 MOV(R15,IMM(0));
-L_clos_loop_15:
+L_loop_8:
 MOV(INDD(R2,R15 + 1),INDD(R1,R15));
-INCR(R15);
-CMP(R15,IMM(0));
-JUMP_LT(L_clos_loop_15);
+ADD(R15,IMM( 1));
+CMP(R15,IMM(2));
+JUMP_LT(L_loop_8);
 POP(R15);
 //moving params from the stack to the first list in env
 //allocating space
@@ -104,12 +104,12 @@ for (i=0;i<FPARG(IMM(1));++i) {
   MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
 }
 MOV(INDD(R2,0),R3); // new env[0] <- R3
-PUSH(LABEL(L_clos_code_15));
+PUSH(LABEL(L_clos_code_8));
 PUSH(R2);
 CALL(MAKE_SOB_CLOSURE);
 DROP(IMM(2));
-JUMP(L_clos_exit_15);
-L_clos_code_15:
+JUMP(L_clos_exit_8);
+L_clos_code_8:
   PUSH(FP);
   MOV(FP,SP);
   //lambda-body
@@ -117,7 +117,7 @@ L_clos_code_15:
 
   POP(FP);
   RETURN;
-L_clos_exit_15:
+L_clos_exit_8:
 
 CMP(INDD(R0,0),T_CLOSURE);
 JUMP_NE(error);
@@ -126,7 +126,7 @@ CALLA(INDD(R0,IMM(2)));
 DROP(IMM(1+2));
 
 PUSH(R0);
-MOV(R0,SOB_BOOLEAN_FALSE);
+MOV(R0,SOB_BOOLEAN_TRUE);
 PUSH(R0);
 
 //pushing number of args
@@ -139,7 +139,7 @@ MOV(INDD(R0,0),T_CLOSURE);
 MOV(R1,R0); //r1 holds a pointer to the closure struct
 //extending the env by 1
 //allocating space for the new env
-PUSH(IMM(1));
+PUSH(IMM(3));
 CALL(MALLOC);
 DROP(IMM(1));
 MOV(R2,R0); //R2 <- new env
@@ -148,11 +148,11 @@ MOV(R1,FPARG(IMM(0))); //R1 <- env
 //R2[j] <- R1[i]
 PUSH(R15);
 MOV(R15,IMM(0));
-L_clos_loop_14:
+L_loop_7:
 MOV(INDD(R2,R15 + 1),INDD(R1,R15));
-INCR(R15);
-CMP(R15,IMM(0));
-JUMP_LT(L_clos_loop_14);
+ADD(R15,IMM( 1));
+CMP(R15,IMM(2));
+JUMP_LT(L_loop_7);
 POP(R15);
 //moving params from the stack to the first list in env
 //allocating space
@@ -164,30 +164,30 @@ for (i=0;i<FPARG(IMM(1));++i) {
   MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
 }
 MOV(INDD(R2,0),R3); // new env[0] <- R3
-PUSH(LABEL(L_clos_code_14));
+PUSH(LABEL(L_clos_code_7));
 PUSH(R2);
 CALL(MAKE_SOB_CLOSURE);
 DROP(IMM(2));
-JUMP(L_clos_exit_14);
-L_clos_code_14:
+JUMP(L_clos_exit_7);
+L_clos_code_7:
   PUSH(FP);
   MOV(FP,SP);
   //lambda-body
   MOV(R0,FPARG(IMM(2+0)));
 
 CMP(R0, SOB_BOOLEAN_FALSE);
-JUMP_EQ(L_if3_else_7);
+JUMP_EQ(L_if3_else_5);
 MOV(R0,FPARG(IMM(2+1)));
 
-JUMP(L_if3_exit_7);
-L_if3_else_7:
+JUMP(L_if3_exit_5);
+L_if3_else_5:
 MOV(R0,FPARG(IMM(2+2)));
 
-L_if3_exit_7:
+L_if3_exit_5:
 
   POP(FP);
   RETURN;
-L_clos_exit_14:
+L_clos_exit_7:
 
 CMP(INDD(R0,0),T_CLOSURE);
 JUMP_NE(error);

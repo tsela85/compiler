@@ -12,14 +12,13 @@
 (define ^label-or-exit (^^label "L_or_exit_"))
 (define ^label-clos-code (^^label "L_clos_code_"))
 (define ^label-clos-exit (^^label "L_clos_exit_"))
-(define ^label-clos-loop (^^label "L_clos_loop_"))
+(define ^label-loop (^^label "L_loop_"))
 (define ^label-applic-err (^^label "L_applic_err_"))
 
 (define nl (list->string (list #\newline)))
 
 (define code-gen
   (lambda (pe)
-    (display "codegen")
     (cond
           ((tag? 'const pe) (code-gen-const pe))
           ((tag? 'if-3 pe) (code-gen-if3 pe))
@@ -222,7 +221,7 @@ error:
               (set! env-size (+ env-size 1))
                   (let* ((label-clos (^label-clos-code))
                          (label-clos-exit (^label-clos-exit))
-                         (label-clos-loop (^label-clos-loop))
+;                         (label-clos-loop (^label-clos-loop))
                          (lambda-code
                           (string-append
                            "//creating sob of size 3 and put 'T_CLOSURE' in the 0th place" nl
@@ -239,19 +238,22 @@ error:
                            "MOV(R2,R0); //R2 <- new env" nl
                            "//shifting the old enviroment" nl
                            "MOV(R1,FPARG(IMM(0))); //R1 <- env" nl
-                                        ;"int i,j;" nl
+
                            "//R2[j] <- R1[i]" nl
                                         ;                  "for(i=0,j=1;i<"(number->string (- env-size 1))";++i,++j){" nl
-                                        ;"  MOV(R3,INDD(R1,IMM(i))); //R3 <- env[i]" nl
-                                        ;"  MOV(INDD(R2,IMM(j)),R3); //R2[j] <- R3" nl
-                           "PUSH(R15);" nl
-                           "MOV(R15,IMM(0));" nl
-                           label-clos-loop":" nl
-                           "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl
-                           "INCR(R15);" nl
-                           "CMP(R15,IMM(" (number->string (- env-size 1)) "));" nl
-                           "JUMP_LT("label-clos-loop ");" nl
-                           "POP(R15);" nl
+
+
+;                           "PUSH(R15);" nl
+;                           "MOV(R15,IMM(0));" nl
+;                           label-clos-loop":" nl
+;                           "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl
+;                           "INCR(R15);" nl
+;                           "CMP(R15,IMM(" (number->string (- env-size 1)) "));" nl
+;                           "JUMP_LT("label-clos-loop ");" nl
+;                           "POP(R15);" nl
+                           (generate-loop (string-append "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl) "0"
+                                          (number->string (- env-size 1)) " 1")
+
                                         ;                  "}" nl
                                         ;"MOV(INDD(R1,IMM(1)),R3); //R1[1] <- new env" nl
                            "//moving params from the stack to the first list in env" nl
@@ -279,10 +281,10 @@ error:
                            "  "(code-gen body) nl
                            "  POP(FP);" nl
                            "  RETURN;" nl
-                          label-clos-exit":" nl
+                           label-clos-exit":" nl
 
 
-                          )))
+                           )))
                     (set! env-size (- env-size 1))
                     lambda-code
 
@@ -317,4 +319,21 @@ error:
                 (code-gen-applic-helper (cdr e))))))
 
 
-//TOM added to learn git functions
+(define generate-loop
+  (lambda (body startval endval step)
+    (let ((label-loop (^label-loop)))
+      (string-append
+       "PUSH(R15);" nl
+       "MOV(R15,IMM(" startval "));" nl
+       label-loop":" nl
+       body
+       "ADD(R15,IMM" step ");" nl
+       "CMP(R15,IMM(" endval "));" nl
+       "JUMP_LT("label-loop ");" nl
+       "POP(R15);" nl
+       ))))
+
+
+(compile '((lambda (x y z) (if x y z)) #t ((lambda (i) i) 7) 8))
+(trace generate-loop)
+(untrace)
