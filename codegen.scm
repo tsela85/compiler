@@ -239,8 +239,11 @@ error:
                            "MOV(R1,FPARG(IMM(0))); //R1 <- env" nl
 
                            "//LOOP" nl
-                           (generate-loop (string-append "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl) "0"
-                                          (number->string (- env-size 1)) " 1")
+                                        ;  (generate-loop (string-append "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl) "0"                                          (number->string (- env-size 1)) " 1")
+
+                           "for(i=0,j=1;i<"(number->string (- env-size 1))";++i,++j){" nl
+                           "  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));" nl
+                           "}" nl
 
                            "//moving params from the stack to the first list in env" nl
                            "//allocating space" nl
@@ -248,12 +251,15 @@ error:
                            "CALL(MALLOC);" nl
                            "DROP(IMM(1));" nl
                            "MOV(R3,R0); // R3 <- new env[0]" nl
+                                        ; (generate-loop
+                                        ; (string-append
+                                        ; "MOV(INDD(R3,R15),FPARG((IMM(2+R15)))); //R3[R15] <- param[R15]" nl) "0"                            "FPARG(IMM(1))" "1")
 
-                           (generate-loop (string-append "MOV(INDD(R3,R15),FPARG((IMM(2+R15)))); //R3[R15] <- param[R15]" nl) "0"
-                                          "FPARG(IMM(1))"   " 1")
-;                           "for (i=0;i<FPARG(IMM(1));++i) { " nl
-;                           "  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]" nl
-;                           "}" nl
+
+                           "for (i=0;i<FPARG(IMM(1));++i) { " nl
+                           "  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]" nl
+                           "}" nl
+
                            "MOV(INDD(R2,0),R3); // new env[0] <- R3" nl
                                         ;"MOV(INDD(R1,1),R3); // R1[1] <- R3" nl
                            "PUSH(LABEL("label-clos"));" nl
@@ -331,4 +337,116 @@ error:
 (compile '((lambda (x y z) (if x y z)) ((lambda (m n) n) #t #f) ((lambda (i) i) 7) 8))
 (compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) #t #f) ((lambda (i) i) 7) 8))
 (compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) ((lambda(x) x) #t) #f) ((lambda (i) i) 7) 8))
-(compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) ((lambda(x) x) (if 3 4 5)) #f) ((lambda (i) i) 7) 8))
+(compile '((lambda (x y z) (if x y z)) ((lambda (m n) m) ((lambda(x) x) (if 33 34 35)) #f) ((lambda (i) i) 37) 38))
+(compile '(((((lambda (x) (x (x x)))
+              (lambda (x)
+                (lambda (y)
+                  (x (x y)))))
+             (lambda (p)
+               (p (lambda (x)
+                    (lambda (y)
+                      (lambda (z)
+                        ((z y) x)))))))
+            (lambda (x)
+              ((x #t) #f)))
+           (lambda (x)
+             (lambda (y)
+               x))) )
+(compile '(((((lambda (a)
+      (lambda (b)
+        (((lambda (a) (lambda (b) ((a b) (lambda (x) (lambda (y) y)))))
+          ((lambda (n)
+             ((n (lambda (x) (lambda (x) (lambda (y) y))))
+              (lambda (x) (lambda (y) x))))
+           (((lambda (a)
+               (lambda (b)
+                 ((b (lambda (n)
+                       ((lambda (p) (p (lambda (a) (lambda (b) b))))
+                        ((n (lambda (p)
+                              (((lambda (a)
+                                  (lambda (b) (lambda (c) ((c a) b))))
+                                ((lambda (n)
+                                   (lambda (s)
+                                     (lambda (z) (s ((n s) z)))))
+                                 ((lambda (p)
+                                    (p (lambda (a) (lambda (b) a))))
+                                  p)))
+                               ((lambda (p)
+                                  (p (lambda (a) (lambda (b) a))))
+                                p))))
+                         (((lambda (a)
+                             (lambda (b) (lambda (c) ((c a) b))))
+                           (lambda (x) (lambda (y) y)))
+                          (lambda (x) (lambda (y) y)))))))
+                  a)))
+             a)
+            b)))
+         ((lambda (n)
+            ((n (lambda (x) (lambda (x) (lambda (y) y))))
+             (lambda (x) (lambda (y) x))))
+          (((lambda (a)
+              (lambda (b)
+                ((b (lambda (n)
+                      ((lambda (p) (p (lambda (a) (lambda (b) b))))
+                       ((n (lambda (p)
+                             (((lambda (a)
+                                 (lambda (b) (lambda (c) ((c a) b))))
+                               ((lambda (n)
+                                  (lambda (s)
+                                    (lambda (z) (s ((n s) z)))))
+                                ((lambda (p)
+                                   (p (lambda (a) (lambda (b) a))))
+                                 p)))
+                              ((lambda (p)
+                                 (p (lambda (a) (lambda (b) a))))
+                               p))))
+                        (((lambda (a)
+                            (lambda (b) (lambda (c) ((c a) b))))
+                          (lambda (x) (lambda (y) y)))
+                         (lambda (x) (lambda (y) y)))))))
+                 a)))
+            b)
+           a)))))
+    ((lambda (n)
+       ((lambda (p) (p (lambda (a) (lambda (b) b))))
+        ((n (lambda (p)
+              (((lambda (a) (lambda (b) (lambda (c) ((c a) b))))
+                ((lambda (n) (lambda (s) (lambda (z) (s ((n s) z)))))
+                 ((lambda (p) (p (lambda (a) (lambda (b) a)))) p)))
+               (((lambda (a)
+                   (lambda (b)
+                     ((b (a (lambda (a)
+                              (lambda (b)
+                                ((a (lambda (n)
+                                      (lambda (s)
+                                        (lambda (z) (s ((n s) z))))))
+                                 b)))))
+                      (lambda (x) (lambda (y) y)))))
+                 ((lambda (p) (p (lambda (a) (lambda (b) a)))) p))
+                ((lambda (p) (p (lambda (a) (lambda (b) b)))) p)))))
+         (((lambda (a) (lambda (b) (lambda (c) ((c a) b))))
+           (lambda (x) x))
+          (lambda (x) x)))))
+     (lambda (x) (lambda (y) (x (x (x (x (x y)))))))))
+   (((lambda (a)
+       (lambda (b)
+         ((b (a (lambda (a)
+                  (lambda (b)
+                    ((a (lambda (n)
+                          (lambda (s) (lambda (z) (s ((n s) z))))))
+                     b)))))
+          (lambda (x) (lambda (y) y)))))
+     (((lambda (a)
+         (lambda (b)
+           ((b (a (lambda (a)
+                    (lambda (b)
+                      ((a (lambda (n)
+                            (lambda (s) (lambda (z) (s ((n s) z))))))
+                       b)))))
+            (lambda (x) (lambda (y) y)))))
+       ((lambda (x) (lambda (y) (x (x (x y)))))
+        (lambda (x) (lambda (y) (x (x y))))))
+      (lambda (x) (lambda (y) (x (x (x y)))))))
+    (lambda (x) (lambda (y) (x (x (x (x (x y)))))))))
+  #t)
+ #f))
