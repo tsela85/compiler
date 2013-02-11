@@ -1,7 +1,7 @@
 /* system/malloc.asm
  * A stub for a more intelligent memory allocation code
  * that shall be re-written later...
- * 
+ *
  * Programmer: Mayer Goldberg, 2010
  */
 
@@ -15,4 +15,3 @@
   POP(R1);
   POP(FP);
   RETURN;
-	

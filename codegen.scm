@@ -241,19 +241,19 @@ error:
                            "MOV(R1,FPARG(IMM(0))); //R1 <- env" nl
                                         ;"int i,j;" nl
                            "//R2[j] <- R1[i]" nl
-                                        ;                  "for(i=0,j=1;i<"(number->string (- env-size 1))";++i,++j){" nl
-                                        ;"  MOV(R3,INDD(R1,IMM(i))); //R3 <- env[i]" nl
-                                        ;"  MOV(INDD(R2,IMM(j)),R3); //R2[j] <- R3" nl
-                           "PUSH(R15);" nl
-                           "MOV(R15,IMM(0));" nl
-                           label-clos-loop":" nl
-                           "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl
-                           "INCR(R15);" nl
-                           "CMP(R15,IMM(" (number->string (- env-size 1)) "));" nl
-                           "JUMP_LT("label-clos-loop ");" nl
-                           "POP(R15);" nl
-                                        ;                  "}" nl
-                                        ;"MOV(INDD(R1,IMM(1)),R3); //R1[1] <- new env" nl
+                           "for(i=0,j=1;i<"(number->string (- env-size 1))";++i,++j){" nl
+                           "  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));" nl
+                           "}" nl
+;                           "PUSH(R15);" nl
+;                           "MOV(R15,IMM(0));" nl
+;                           label-clos-loop":" nl
+;                           "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl
+;                           "INCR(R15);" nl
+;                           "CMP(R15,IMM(" (number->string (- env-size 1)) "));" nl
+;                           "JUMP_LT("label-clos-loop ");" nl
+;                           "POP(R15);" nl
+
+
                            "//moving params from the stack to the first list in env" nl
                            "//allocating space" nl
                            "PUSH(FPARG(IMM(1)));" nl
@@ -316,5 +316,116 @@ error:
                 "PUSH(R0);" nl
                 (code-gen-applic-helper (cdr e))))))
 
+(compile '(((((lambda (x) (x (x x)))
+      (lambda (x)
+        (lambda (y)
+          (x (x y)))))
+     (lambda (p)
+       (p (lambda (x)
+            (lambda (y)
+              (lambda (z)
+                ((z y) x)))))))
+    (lambda (x)
+      ((x #t) #f)))
+   (lambda (x)
+     (lambda (y)
+       x))))
 
-//TOM added to learn git functions
+(compile '(((((lambda (a)
+      (lambda (b)
+        (((lambda (a) (lambda (b) ((a b) (lambda (x) (lambda (y) y)))))
+          ((lambda (n)
+             ((n (lambda (x) (lambda (x) (lambda (y) y))))
+              (lambda (x) (lambda (y) x))))
+           (((lambda (a)
+               (lambda (b)
+                 ((b (lambda (n)
+                       ((lambda (p) (p (lambda (a) (lambda (b) b))))
+                        ((n (lambda (p)
+                              (((lambda (a)
+                                  (lambda (b) (lambda (c) ((c a) b))))
+                                ((lambda (n)
+                                   (lambda (s)
+                                     (lambda (z) (s ((n s) z)))))
+                                 ((lambda (p)
+                                    (p (lambda (a) (lambda (b) a))))
+                                  p)))
+                               ((lambda (p)
+                                  (p (lambda (a) (lambda (b) a))))
+                                p))))
+                         (((lambda (a)
+                             (lambda (b) (lambda (c) ((c a) b))))
+                           (lambda (x) (lambda (y) y)))
+                          (lambda (x) (lambda (y) y)))))))
+                  a)))
+             a)
+            b)))
+         ((lambda (n)
+            ((n (lambda (x) (lambda (x) (lambda (y) y))))
+             (lambda (x) (lambda (y) x))))
+          (((lambda (a)
+              (lambda (b)
+                ((b (lambda (n)
+                      ((lambda (p) (p (lambda (a) (lambda (b) b))))
+                       ((n (lambda (p)
+                             (((lambda (a)
+                                 (lambda (b) (lambda (c) ((c a) b))))
+                               ((lambda (n)
+                                  (lambda (s)
+                                    (lambda (z) (s ((n s) z)))))
+                                ((lambda (p)
+                                   (p (lambda (a) (lambda (b) a))))
+                                 p)))
+                              ((lambda (p)
+                                 (p (lambda (a) (lambda (b) a))))
+                               p))))
+                        (((lambda (a)
+                            (lambda (b) (lambda (c) ((c a) b))))
+                          (lambda (x) (lambda (y) y)))
+                         (lambda (x) (lambda (y) y)))))))
+                 a)))
+            b)
+           a)))))
+    ((lambda (n)
+       ((lambda (p) (p (lambda (a) (lambda (b) b))))
+        ((n (lambda (p)
+              (((lambda (a) (lambda (b) (lambda (c) ((c a) b))))
+                ((lambda (n) (lambda (s) (lambda (z) (s ((n s) z)))))
+                 ((lambda (p) (p (lambda (a) (lambda (b) a)))) p)))
+               (((lambda (a)
+                   (lambda (b)
+                     ((b (a (lambda (a)
+                              (lambda (b)
+                                ((a (lambda (n)
+                                      (lambda (s)
+                                        (lambda (z) (s ((n s) z))))))
+                                 b)))))
+                      (lambda (x) (lambda (y) y)))))
+                 ((lambda (p) (p (lambda (a) (lambda (b) a)))) p))
+                ((lambda (p) (p (lambda (a) (lambda (b) b)))) p)))))
+         (((lambda (a) (lambda (b) (lambda (c) ((c a) b))))
+           (lambda (x) x))
+          (lambda (x) x)))))
+     (lambda (x) (lambda (y) (x (x (x (x (x y)))))))))
+   (((lambda (a)
+       (lambda (b)
+         ((b (a (lambda (a)
+                  (lambda (b)
+                    ((a (lambda (n)
+                          (lambda (s) (lambda (z) (s ((n s) z))))))
+                     b)))))
+          (lambda (x) (lambda (y) y)))))
+     (((lambda (a)
+         (lambda (b)
+           ((b (a (lambda (a)
+                    (lambda (b)
+                      ((a (lambda (n)
+                            (lambda (s) (lambda (z) (s ((n s) z))))))
+                       b)))))
+            (lambda (x) (lambda (y) y)))))
+       ((lambda (x) (lambda (y) (x (x (x y)))))
+        (lambda (x) (lambda (y) (x (x y))))))
+      (lambda (x) (lambda (y) (x (x (x y)))))))
+    (lambda (x) (lambda (y) (x (x (x (x (x y)))))))))
+  #t)
+ #f))
