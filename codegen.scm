@@ -241,17 +241,17 @@ error:
                            "MOV(R1,FPARG(IMM(0))); //R1 <- env" nl
                                         ;"int i,j;" nl
                            "//R2[j] <- R1[i]" nl
-                           "for(i=0,j=1;i<"(number->string (- env-size 1))";++i,++j){" nl
-                           "  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));" nl
-                           "}" nl
-;                           "PUSH(R15);" nl
-;                           "MOV(R15,IMM(0));" nl
-;                           label-clos-loop":" nl
-;                           "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl
-;                           "INCR(R15);" nl
-;                           "CMP(R15,IMM(" (number->string (- env-size 1)) "));" nl
-;                           "JUMP_LT("label-clos-loop ");" nl
-;                           "POP(R15);" nl
+;                           "for(i=0,j=1;i<"(number->string (- env-size 1))";++i,++j){" nl
+;                           "  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));" nl
+;                           "}" nl
+                           "PUSH(R15);" nl
+                           "MOV(R15,IMM(0));" nl
+                           label-clos-loop":" nl
+                           "MOV(INDD(R2,R15 + 1),INDD(R1,R15));" nl
+                           "INCR(R15);" nl
+                           "CMP(R15,IMM(" (number->string (- env-size 1)) "));" nl
+                           "JUMP_LT("label-clos-loop ");" nl
+                           "POP(R15);" nl
 
 
                            "//moving params from the stack to the first list in env" nl
