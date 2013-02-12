@@ -16,20 +16,20 @@
   (lambda (filename)
     (let ((port (open-input-file filename)))
       (letrec ((loop
-		(lambda ()
-		  (let ((ch (read-char port)))
-		    (if (eof-object? ch) '()
-			(cons ch (loop)))))))
-	(let ((s (loop)))
-	  (close-input-port port)
-	  s)))))
+                (lambda ()
+                  (let ((ch (read-char port)))
+                    (if (eof-object? ch) '()
+                        (cons ch (loop)))))))
+        (let ((s (loop)))
+          (close-input-port port)
+          s)))))
 
 (define make-char-between?
   (lambda (char<=?)
     (lambda (char-from char-to)
       (lambda (char)
-	(and (char<=? char-from char)
-	     (char<=? char char-to))))))
+        (and (char<=? char-from char)
+             (char<=? char char-to))))))
 
 ;;; The scanner recognizes parenthesis and single quote.
 ;;; It knows to ignore comments up to the end of the current input line,
@@ -37,118 +37,118 @@
 
 (define list->tokens
   (letrec ((st-init
-	    (lambda (s)
-	      (cond
-	       ((null? s) '())
-	       ((char=? (car s) #\;) (st-comment s))
-	       ((char=? (car s) #\.) `((dot) ,@(st-init (cdr s))))
-	       ((char=? (car s) #\') `((single-quote) ,@(st-init (cdr s))))
-	       ((char=? (car s) #\`) `((quasiquote) ,@(st-init (cdr s))))
-	       ((char=? (car s) #\,) (st-unquote (cdr s)))
-	       ((char=? (car s) #\() `((lparen) ,@(st-init (cdr s))))
-	       ((char=? (car s) #\)) `((rparen) ,@(st-init (cdr s))))
-	       ((char=? (car s) #\#) (st-hash (cdr s)))
-	       ((char=? (car s) #\") (st-string (cdr s) '()))
-	       ((char-whitespace? (car s)) (st-init (cdr s)))
-	       ((char-symbol? (car s))
-		(st-symbol/number (cdr s) (list (car s))))
-	       (else (scanner-error "What's this" s)))))
-	   (st-unquote
-	    (lambda (s)
-	      (cond ((null? s) `((unquote) ,@(st-init '())))
-		    ((char=? (car s) #\@)
-		     `((,'unquote-splicing) ,@(st-init (cdr s))))
-		    (else `((,'unquote) ,@(st-init s))))))
-	   (st-symbol/number
-	    (lambda (s chars)
-	      (cond ((null? s)
-		     `(,(make-symbol/number-token chars) ,@(st-init '())))
-		    ((char-symbol? (car s))
-		     (st-symbol/number (cdr s) (cons (car s) chars)))
-		    ((char-delimiter? (car s))
-		     `(,(make-symbol/number-token chars) ,@(st-init s)))
-		    (else (scanner-error "At the end of a symbol: " s)))))
-	   (st-string
-	    (lambda (s chars)
-	      (cond ((null? s)
-		     (scanner-error "Expecting a \" char to close the string"))
-		    ((char=? (car s) #\")
-		     `((string ,(list->string (reverse chars)))
-		       ,@(st-init (cdr s))))
-		    ((char=? (car s) #\\) (st-meta-char (cdr s) chars))
-		    (else (st-string (cdr s) (cons (car s) chars))))))
-	   (st-meta-char
-	    (lambda (s chars)
-	      (cond ((null? s)
-		     (scanner-error
-		      "Expecting a string meta-char; reached EOF"))
-		    ((char=? (car s) #\\) (st-string (cdr s) (cons #\\ chars)))
-		    ((char=? (car s) #\") (st-string (cdr s) (cons #\" chars)))
-		    ((char-ci=? (car s) #\n)
-		     (st-string (cdr s) (cons #\newline chars)))
-		    ((char-ci=? (car s) #\r)
-		     (st-string (cdr s) (cons #\return chars)))
-		    ((char-ci=? (car s) #\t)
-		     (st-string (cdr s) (cons #\tab chars)))
-		    ((char-ci=? (car s) #\f)
-		     (st-string (cdr s) (cons #\page chars)))
-		    (else (scanner-error "What kind of a meta-char is " s)))))
-	   (st-hash
-	    (lambda (s)
-	      (cond ((null? s)
-		     (scanner-error
-		      "Expecting something after #, but reached end"))
-		    ((char=? (car s) #\() `((vector) ,@(st-init (cdr s))))
-		    ((char=? (car s) #\\) (st-char-1 (cdr s)))
-		    ((char-ci=? (car s) #\f)
-		     `((boolean #f) ,@(st-init (cdr s))))
-		    ((char-ci=? (car s) #\t)
-		     `((boolean #t) ,@(st-init (cdr s))))
-		    ((char=? (car s) #\;) `((comment) ,@(st-init (cdr s))))
-		    (else (scanner-error
-			   "Expecting t, f, \\, ( after #, but found" s)))))
-	   (st-char-1
-	    (lambda (s)
-	      (cond ((null? s) (error 'scanner "Must be one char after #\\"))
-		    (else (st-char (cdr s) (list (car s)))))))
-	   (st-char
-	    (lambda (s chars)
-	      (cond ((null? s) `((char ,(make-char chars)) ,@(st-init '())))
-		    ((char-delimiter? (car s))
-		     `((char ,(make-char chars)) ,@(st-init s)))
-		    (else (st-char (cdr s) (cons (car s) chars))))))
-	   (st-comment
-	    (lambda (s)
-	      (cond ((null? s) (st-init '()))
-		    ((char=? (car s) #\newline) (st-init (cdr s)))
-		    (else (st-comment (cdr s)))))))
+            (lambda (s)
+              (cond
+               ((null? s) '())
+               ((char=? (car s) #\;) (st-comment s))
+               ((char=? (car s) #\.) `((dot) ,@(st-init (cdr s))))
+               ((char=? (car s) #\') `((single-quote) ,@(st-init (cdr s))))
+               ((char=? (car s) #\`) `((quasiquote) ,@(st-init (cdr s))))
+               ((char=? (car s) #\,) (st-unquote (cdr s)))
+               ((char=? (car s) #\() `((lparen) ,@(st-init (cdr s))))
+               ((char=? (car s) #\)) `((rparen) ,@(st-init (cdr s))))
+               ((char=? (car s) #\#) (st-hash (cdr s)))
+               ((char=? (car s) #\") (st-string (cdr s) '()))
+               ((char-whitespace? (car s)) (st-init (cdr s)))
+               ((char-symbol? (car s))
+                (st-symbol/number (cdr s) (list (car s))))
+               (else (scanner-error "What's this" s)))))
+           (st-unquote
+            (lambda (s)
+              (cond ((null? s) `((unquote) ,@(st-init '())))
+                    ((char=? (car s) #\@)
+                     `((,'unquote-splicing) ,@(st-init (cdr s))))
+                    (else `((,'unquote) ,@(st-init s))))))
+           (st-symbol/number
+            (lambda (s chars)
+              (cond ((null? s)
+                     `(,(make-symbol/number-token chars) ,@(st-init '())))
+                    ((char-symbol? (car s))
+                     (st-symbol/number (cdr s) (cons (car s) chars)))
+                    ((char-delimiter? (car s))
+                     `(,(make-symbol/number-token chars) ,@(st-init s)))
+                    (else (scanner-error "At the end of a symbol: " s)))))
+           (st-string
+            (lambda (s chars)
+              (cond ((null? s)
+                     (scanner-error "Expecting a \" char to close the string"))
+                    ((char=? (car s) #\")
+                     `((string ,(list->string (reverse chars)))
+                       ,@(st-init (cdr s))))
+                    ((char=? (car s) #\\) (st-meta-char (cdr s) chars))
+                    (else (st-string (cdr s) (cons (car s) chars))))))
+           (st-meta-char
+            (lambda (s chars)
+              (cond ((null? s)
+                     (scanner-error
+                      "Expecting a string meta-char; reached EOF"))
+                    ((char=? (car s) #\\) (st-string (cdr s) (cons #\\ chars)))
+                    ((char=? (car s) #\") (st-string (cdr s) (cons #\" chars)))
+                    ((char-ci=? (car s) #\n)
+                     (st-string (cdr s) (cons #\newline chars)))
+                    ((char-ci=? (car s) #\r)
+                     (st-string (cdr s) (cons #\return chars)))
+                    ((char-ci=? (car s) #\t)
+                     (st-string (cdr s) (cons #\tab chars)))
+                    ((char-ci=? (car s) #\f)
+                     (st-string (cdr s) (cons #\page chars)))
+                    (else (scanner-error "What kind of a meta-char is " s)))))
+           (st-hash
+            (lambda (s)
+              (cond ((null? s)
+                     (scanner-error
+                      "Expecting something after #, but reached end"))
+                    ((char=? (car s) #\() `((vector) ,@(st-init (cdr s))))
+                    ((char=? (car s) #\\) (st-char-1 (cdr s)))
+                    ((char-ci=? (car s) #\f)
+                     `((boolean #f) ,@(st-init (cdr s))))
+                    ((char-ci=? (car s) #\t)
+                     `((boolean #t) ,@(st-init (cdr s))))
+                    ((char=? (car s) #\;) `((comment) ,@(st-init (cdr s))))
+                    (else (scanner-error
+                           "Expecting t, f, \\, ( after #, but found" s)))))
+           (st-char-1
+            (lambda (s)
+              (cond ((null? s) (error 'scanner "Must be one char after #\\"))
+                    (else (st-char (cdr s) (list (car s)))))))
+           (st-char
+            (lambda (s chars)
+              (cond ((null? s) `((char ,(make-char chars)) ,@(st-init '())))
+                    ((char-delimiter? (car s))
+                     `((char ,(make-char chars)) ,@(st-init s)))
+                    (else (st-char (cdr s) (cons (car s) chars))))))
+           (st-comment
+            (lambda (s)
+              (cond ((null? s) (st-init '()))
+                    ((char=? (car s) #\newline) (st-init (cdr s)))
+                    (else (st-comment (cdr s)))))))
     (lambda (s)
       (st-init s))))
 
 (define make-symbol/number-token
   (lambda (chars)
     (let* ((string (list->string (reverse chars)))
-	   (maybe-number (string->number string)))
+           (maybe-number (string->number string)))
       (if (number? maybe-number)
-	  `(number ,maybe-number)
-	  `(symbol ,(string->symbol (string-downcase string)))))))
+          `(number ,maybe-number)
+          `(symbol ,(string->symbol (string-downcase string)))))))
 
 (define make-char
   (lambda (chars)
     (cond ((null? chars) (scanner-error "Found #\\ without any char"))
-	  ((null? (cdr chars)) (car chars))
-	  (else (let* ((string (list->string (reverse chars)))
-		       (maybe-number (string->number string 8)))
-		  (if (number? maybe-number)
-		      (integer->char maybe-number)
-		      (cond ((string-ci=? string "return") #\return)
-			    ((string-ci=? string "newline") #\newline)
-			    ((string-ci=? string "space") #\space)
-			    ((string-ci=? string "tab") #\tab)
-			    ((string-ci=? string "page") #\page)
-			    (else (scanner-error
-				   "Can't recognize the following character: "
-				   (format "#\\~s" string))))))))))
+          ((null? (cdr chars)) (car chars))
+          (else (let* ((string (list->string (reverse chars)))
+                       (maybe-number (string->number string 8)))
+                  (if (number? maybe-number)
+                      (integer->char maybe-number)
+                      (cond ((string-ci=? string "return") #\return)
+                            ((string-ci=? string "newline") #\newline)
+                            ((string-ci=? string "space") #\space)
+                            ((string-ci=? string "tab") #\tab)
+                            ((string-ci=? string "page") #\page)
+                            (else (scanner-error
+                                   "Can't recognize the following character: "
+                                   (format "#\\~s" string))))))))))
 
 (define char-alphabetic? ((make-char-between? char-ci<=?) #\a #\z))
 (define char-decimal? ((make-char-between? char<=?) #\0 #\9))
@@ -157,10 +157,10 @@
   (let ((punc-chars (string->list "!@$%^*-_=+<>./?:")))
     (lambda (char)
       (or (char-alphabetic? char)
-	  (char-decimal? char)
-	  (ormap 
-	   (lambda (punc-char) (char=? punc-char char))
-	   punc-chars)))))
+          (char-decimal? char)
+          (ormap
+           (lambda (punc-char) (char=? punc-char char))
+           punc-chars)))))
 
 (define char-whitespace?
   (lambda (char)
@@ -169,17 +169,17 @@
 (define char-delimiter?
   (lambda (char)
     (or (char-whitespace? char)
-	(not (char-symbol? char)))))
+        (not (char-symbol? char)))))
 
 (define scanner-error
   (lambda (message s)
     (if (null? s)
-	(error 'list-tokens message)
-	(error 'list-tokens
-	       (format "~a: [~s]~a"
-		       message
-		       (car s)
-		       (list->string (cdr s)))))))
+        (error 'list-tokens message)
+        (error 'list-tokens
+               (format "~a: [~s]~a"
+                       message
+                       (car s)
+                       (list->string (cdr s)))))))
 
 (define file->tokens
   (lambda (filename)
@@ -281,23 +281,23 @@
   (lambda (sexpr)
     (or (number? sexpr) (boolean? sexpr) (char? sexpr) (string? sexpr) )
     ))
-	
+
 (define parse-const
   (lambda (sexpr)
     (list 'const sexpr)))
 
 ;;; quote
-	
+
 (define quote?
   (lambda (sexpr)
     (and (pair? sexpr) (equal? (car sexpr) 'quote))
     ))
-	
+
 (define parse-quote
   (lambda (sexpr)
     (list 'const (cadr sexpr))))
 
-;;; var	
+;;; var
 
 (define parse-var
   (lambda (sexpr)
@@ -317,7 +317,7 @@
 (define var?
   (lambda (sexpr)
     (and (not (vector? sexpr))(not (list? sexpr)) (non-reserved sexpr reserved))))
-	
+
 ;;;if
 
 (define if-3?
@@ -337,17 +337,17 @@
 (define parse-if-2
   (lambda (sexpr)
     (list 'if-3 (parse (cadr sexpr)) (parse (caddr sexpr)) `(const ,void-object))))
-	
+
 ;;;lambda
 
-(define not-dup? 
+(define not-dup?
 (lambda (e)
 (cond ((list? e) (= (length (dedupe e)) (length e)))
 (else #t))))
 
 (define lambda?
   (lambda (sexpr)
-    (and (pair? sexpr) (equal? (car sexpr) 'lambda)(pair? (cdr sexpr))(pair? (cddr sexpr)) (not-dup? (cadr sexpr))))) 
+    (and (pair? sexpr) (equal? (car sexpr) 'lambda)(pair? (cdr sexpr))(pair? (cddr sexpr)) (not-dup? (cadr sexpr)))))
 
 (define parse-lambda-helper
   (lambda (sexpr ret-pro ret-imp ret-sym)
@@ -368,7 +368,7 @@
                            (lambda () `(lambda-simple ,arg1 ,body))
                            (lambda (s a) `(lambda-opt ,s ,a ,body))
                            (lambda () `(lambda-variadic ,arg1 ,body))))))
-						   
+
 ;;; define
 
 (define define?
@@ -380,7 +380,7 @@
   (lambda (sexpr)
     (cond ((pair? (cadr sexpr)) (list 'define (parse (caadr sexpr))(parse-lambda (list 'lambda (cdadr sexpr) (caddr sexpr)))))
           (else (list 'define (parse (cadr sexpr)) (parse (caddr sexpr)))))))
-		  
+
 ;;; applic
 
 (define applic?
@@ -396,7 +396,7 @@
     (if (null? sexpr)
         sexpr
         (cons (parse (car sexpr)) (parse-applic-args (cdr sexpr))))))
-		
+
 ;;;begin
 
 (define begin?
@@ -414,7 +414,7 @@
           (else `(begin ,@sexpr) ))))
 
 ;;; or
-		  
+
 (define or?
   (lambda (sexpr)
     (and (pair? sexpr)(equal? (car sexpr) 'or))))
@@ -426,7 +426,7 @@
          (else (list 'or (map parse (cdr sexpr)))))))
 
 ;;; and
-		 
+
 (define and?
   (lambda (sexpr)
     (and (pair? sexpr)(equal? (car sexpr) 'and))))
@@ -444,7 +444,7 @@
            ))))
 
 ;;; cond
-		   
+
 (define cond?
   (lambda (sexpr)
     (and (pair? sexpr) (equal? (car sexpr) 'cond) (pair? (cdr sexpr)) (not (null? (cdr sexpr))) (cond?-helper (cdr sexpr)))))
@@ -455,11 +455,11 @@
          (or (and (equal? (caar sexpr) 'else) (pair? (cdar sexpr)) (not (null? (cdar sexpr))) (null? (cdr sexpr)))
              (not (equal? (caar sexpr) 'else)))
          (or (null? (cdr sexpr)) (cond?-helper (cdr sexpr))))))
-         
+
 (define expand-cond-helper
   (lambda (sexpr)
     (cond ((null? (cdr sexpr))
-           (if (equal? (caar sexpr) 'else) 
+           (if (equal? (caar sexpr) 'else)
                (beginify (cdar sexpr))
                `(if ,(caar sexpr) ,(beginify (cdar sexpr)))))
           (else `(if ,(caar sexpr) ,(beginify (cdar sexpr)) ,(expand-cond-helper (cdr sexpr)))))
@@ -468,7 +468,7 @@
 (define expand-cond
   (lambda (sexpr)
     (expand-cond-helper (cdr sexpr))))
-	
+
 ;;; let
 
 (define let?
@@ -487,7 +487,7 @@
            (else "error")))))
 
 ;;; let*
-		   
+
 (define let*?
   (lambda (sexpr)
     (and (pair? sexpr) (equal? (car sexpr) 'let*) (pair? (cdr sexpr))(pair? (cddr sexpr))(or (null? (cadr sexpr)) (pair? (cadr sexpr)) (andmap (lambda(x)
@@ -507,30 +507,30 @@
    (cond ((and (null? args) (null? vals)) `((lambda () ,@body)))
          ((and (null? (cdr args)) (null? (cdr vals))) `((lambda (,(car args)) ,@body) ,(car vals)))
          (else `((lambda (,(car args)) ,(expand-let*-helper (cdr args) (cdr vals) body)) ,(car vals))))))
-		 
+
 ;;; quasiquote
 
 (define expand-qq
   (lambda (e)
     (cond ((unquote? e) (cadr e))
-	  ((unquote-splicing? e) (error 'expand-qq "unquote-splicing here makes no sense!"))
-	  ((pair? e)
-	   (let ((a (car e))
-		 (b (cdr e)))
-	     (cond ((unquote-splicing? a) `(append ,(cadr a) ,(expand-qq b)))
-		   ((unquote-splicing? b) `(cons ,(expand-qq a) ,(cadr b)))
-		   (else `(cons ,(expand-qq a) ,(expand-qq b))))))
-	  ((vector? e) `(list->vector ,(expand-qq (vector->list e))))
-	  ((or (null? e) (symbol? e)) `',e)
-	  (else e))))
+          ((unquote-splicing? e) (error 'expand-qq "unquote-splicing here makes no sense!"))
+          ((pair? e)
+           (let ((a (car e))
+                 (b (cdr e)))
+             (cond ((unquote-splicing? a) `(append ,(cadr a) ,(expand-qq b)))
+                   ((unquote-splicing? b) `(cons ,(expand-qq a) ,(cadr b)))
+                   (else `(cons ,(expand-qq a) ,(expand-qq b))))))
+          ((vector? e) `(list->vector ,(expand-qq (vector->list e))))
+          ((or (null? e) (symbol? e)) `',e)
+          (else e))))
 
 (define ^quote?
   (lambda (tag)
     (lambda (e)
       (and (pair? e)
-	   (eq? (car e) tag)
-	   (pair? (cdr e))
-	   (null? (cddr e))))))
+           (eq? (car e) tag)
+           (pair? (cdr e))
+           (null? (cddr e))))))
 
 (define qq? (^quote? 'quasiquote))
 
@@ -544,7 +544,7 @@
     (and (pair? sexpr) (equal? (car sexpr) 'letrec) (pair? (cdr sexpr))(pair? (cddr sexpr))(pair? (cadr sexpr)) (andmap (lambda(x)
                                                                                                                        (and (pair? x)
                                                                                                                             (= (length x) 2)
-																															(lambda? (cadr x))))
+                                                                                                                                                                                                                                                        (lambda? (cadr x))))
                                                                                                                      (cadr sexpr)))))
 
 (define with (lambda (s f) (apply f s)))
@@ -552,33 +552,33 @@
 (define Yn
   (lambda fs
     (let ((ms (map
-		  (lambda (fi)
-		    (lambda ms
-		      (apply fi
-			     (map (lambda (mi)
-				    (lambda args
-				      (apply (apply mi ms) args)))
-			       ms))))
-		fs)))
+                  (lambda (fi)
+                    (lambda ms
+                      (apply fi
+                             (map (lambda (mi)
+                                    (lambda args
+                                      (apply (apply mi ms) args)))
+                               ms))))
+                fs)))
       (apply (car ms) ms))))
 
 (define expand-letrec
   (lambda (e)
     (with e
       (lambda (_letrec ribs . exprs)
-	(let* ((names `(,(gensym) ,@(map car ribs)))
-	       (fs `((lambda ,names ,@exprs)
-		     ,@(map (lambda (rib) `(lambda ,names ,(cadr rib)))
-			 ribs))))
-	  `(Yn ,@fs))))))
+        (let* ((names `(,(gensym) ,@(map car ribs)))
+               (fs `((lambda ,names ,@exprs)
+                     ,@(map (lambda (rib) `(lambda ,names ,(cadr rib)))
+                         ribs))))
+          `(Yn ,@fs))))))
 
 (define (dedupe e)
   (if (null? e) '()
-      (cons (car e) (dedupe (filter (lambda (x) (not (equal? x (car e))))  
-	  (cdr e))))))
-									
+      (cons (car e) (dedupe (filter (lambda (x) (not (equal? x (car e))))
+          (cdr e))))))
+
 (define void-object (if #f #t))
-									
+
 (define parse
   (lambda (sexpr)
     (cond ((const? sexpr) (parse-const sexpr))
@@ -595,12 +595,12 @@
           ((and? sexpr) (parse (expand-and sexpr)))
           ((let? sexpr) (parse (expand-let sexpr)))
           ((let*? sexpr) (parse (expand-let* sexpr)))
-		  ((qq? sexpr) (parse (expand-qq (cadr sexpr))))
-		  ((letrec? sexpr) (parse (expand-letrec sexpr)))
-		  (else (error 'parse (format "~s is not legal expression" sexpr)))
+                  ((qq? sexpr) (parse (expand-qq (cadr sexpr))))
+                  ((letrec? sexpr) (parse (expand-letrec sexpr)))
+                  (else (error 'parse (format "~s is not legal expression" sexpr)))
       )))
-	  
-	  
+
+
 
 ;;;
 ;;; ASSIGNMENT 3
@@ -612,163 +612,163 @@
     (if (pair? exp)
         (eq? tag (car exp))
         #f)))
-		
+
 ;;;task1
-		
+
 (define search-in-rib
-	(lambda (a s ret-min ret-nf)
-		(cond ((null? s) (ret-nf))
-			((eq? (car s) a) (ret-min 0))
-			(else (search-in-rib a (cdr s)
-					(lambda (min)
-							(ret-min (+ 1 min)))
-					ret-nf)))))
-					
+        (lambda (a s ret-min ret-nf)
+                (cond ((null? s) (ret-nf))
+                        ((eq? (car s) a) (ret-min 0))
+                        (else (search-in-rib a (cdr s)
+                                        (lambda (min)
+                                                        (ret-min (+ 1 min)))
+                                        ret-nf)))))
+
 (define search-in-ribs
-	(lambda (a env ret-maj+min ret-nf)
-		(if (null? env)
-			(ret-nf)
-			(search-in-rib a (car env)
-				(lambda (min)
-						(ret-maj+min 0 min))
-				(lambda ()
-						(search-in-ribs a (cdr env)
-							(lambda (maj min)
-								(ret-maj+min (+ 1 maj) min))
-							ret-nf))))))
-					
+        (lambda (a env ret-maj+min ret-nf)
+                (if (null? env)
+                        (ret-nf)
+                        (search-in-rib a (car env)
+                                (lambda (min)
+                                                (ret-maj+min 0 min))
+                                (lambda ()
+                                                (search-in-ribs a (cdr env)
+                                                        (lambda (maj min)
+                                                                (ret-maj+min (+ 1 maj) min))
+                                                        ret-nf))))))
+
 (define run
-	(lambda (pe params env)
-		(cond 	((tag? 'const pe) pe)
-				((tag? 'var pe)
-					(with pe
-						(lambda (_ v)
-							(search-in-rib v params
-								(lambda (min) `(pvar ,v ,min))
-								(lambda() (search-in-ribs v env
-									(lambda (min maj) `(bvar ,v ,min ,maj))
-									(lambda () `(fvar ,v)) ))))))
-				((tag? 'if-3 pe) 
-					(with pe
-						(lambda (_ test dit dif)
-							`(if-3 ,(run test params env) ,(run dit params env) ,(run dif params env)))))
-				((tag? 'lambda-simple pe)
-					(with pe
-						(lambda (_ args body)
-							`(lambda-simple ,args ,(run body args (cons params env))))))
-							
-				((tag? 'lambda-opt pe)
-					(with pe
-						(lambda (_ args opt body)
-							(let ((args2 `(,@args ,opt)))
-							`(lambda-opt ,args ,opt ,(run body args2 (cons params env)))))))
-							
-				((tag? 'lambda-variadic pe)
-					(with pe
-						(lambda (_ args body)
-							`(lambda-variadic ,args ,(run body (list args) (cons params env))))))
-							
-				((tag? 'define pe)
-					(with pe
-						(lambda (_ var exp)
-							`(define ,(run var params env) ,(run exp params env)))))
-				((or (tag? 'applic pe) )
-					(with pe
-						(lambda (tag proc args)
-							`(,tag ,(run proc params env) ,(map (lambda (ex)
-																	(run ex params env)) args)))))
-				((tag? 'seq pe)
-					(with pe
-						(lambda (_ exps)
-							`(seq ,(map (lambda (ex)
-										(run ex params env)) exps)))))
-				((tag? 'or pe)
-					(with pe
-						(lambda (_ exps)
-							`(or ,(map (lambda (ex)
-										(run ex params env)) exps)))))
-					
-				(else pe) )))
-				
+        (lambda (pe params env)
+                (cond   ((tag? 'const pe) pe)
+                                ((tag? 'var pe)
+                                        (with pe
+                                                (lambda (_ v)
+                                                        (search-in-rib v params
+                                                                (lambda (min) `(pvar ,v ,min))
+                                                                (lambda() (search-in-ribs v env
+                                                                        (lambda (min maj) `(bvar ,v ,min ,maj))
+                                                                        (lambda () `(fvar ,v)) ))))))
+                                ((tag? 'if-3 pe)
+                                        (with pe
+                                                (lambda (_ test dit dif)
+                                                        `(if-3 ,(run test params env) ,(run dit params env) ,(run dif params env)))))
+                                ((tag? 'lambda-simple pe)
+                                        (with pe
+                                                (lambda (_ args body)
+                                                        `(lambda-simple ,args ,(run body args (cons params env))))))
+
+                                ((tag? 'lambda-opt pe)
+                                        (with pe
+                                                (lambda (_ args opt body)
+                                                        (let ((args2 `(,@args ,opt)))
+                                                        `(lambda-opt ,args ,opt ,(run body args2 (cons params env)))))))
+
+                                ((tag? 'lambda-variadic pe)
+                                        (with pe
+                                                (lambda (_ args body)
+                                                        `(lambda-variadic ,args ,(run body (list args) (cons params env))))))
+
+                                ((tag? 'define pe)
+                                        (with pe
+                                                (lambda (_ var exp)
+                                                        `(define ,(run var params env) ,(run exp params env)))))
+                                ((or (tag? 'applic pe) )
+                                        (with pe
+                                                (lambda (tag proc args)
+                                                        `(,tag ,(run proc params env) ,(map (lambda (ex)
+                                                                                                                                        (run ex params env)) args)))))
+                                ((tag? 'seq pe)
+                                        (with pe
+                                                (lambda (_ exps)
+                                                        `(seq ,(map (lambda (ex)
+                                                                                (run ex params env)) exps)))))
+                                ((tag? 'or pe)
+                                        (with pe
+                                                (lambda (_ exps)
+                                                        `(or ,(map (lambda (ex)
+                                                                                (run ex params env)) exps)))))
+
+                                (else pe) )))
+
 (define pe->lex-pe
-	(letrec ((run
-			(lambda (pe params env)
-				(cond 	((tag? 'const pe) pe)
-						((tag? 'var pe)
-							(with pe
-								(lambda (_ v)
-									(search-in-rib v params
-										(lambda (min) `(pvar ,v ,min))
-										(lambda() (search-in-ribs v env
-											(lambda (min maj) `(bvar ,v ,min ,maj))
-											(lambda () `(fvar ,v)) ))))))
-						((tag? 'if-3 pe) 
-							(with pe
-								(lambda (_ test dit dif)
-									`(if-3 ,(run test params env) ,(run dit params env) ,(run dif params env)))))
-						((tag? 'lambda-simple pe)
-							(with pe
-								(lambda (_ args body)
-									`(lambda-simple ,args ,(run body args (cons params env))))))
-									
-						((tag? 'lambda-opt pe)
-							(with pe
-								(lambda (_ args opt body)
-									(let ((args2 `(,@args ,opt)))
-									`(lambda-opt ,args ,opt ,(run body args2 (cons params env)))))))
-									
-						((tag? 'lambda-variadic pe)
-							(with pe
-								(lambda (_ args body)
-									`(lambda-variadic ,args ,(run body (list args) (cons params env))))))
-									
-						((tag? 'define pe)
-							(with pe
-								(lambda (_ var exp)
-									`(define ,(run var params env) ,(run exp params env)))))
-						((or (tag? 'applic pe) )
-							(with pe
-								(lambda (tag proc args)
-									`(,tag ,(run proc params env) ,(map (lambda (ex)
-																			(run ex params env)) args)))))
-						((tag? 'seq pe)
-							(with pe
-								(lambda (_ exps)
-									`(seq ,(map (lambda (ex)
-												(run ex params env)) exps)))))
-						((tag? 'or pe)
-							(with pe
-								(lambda (_ exps)
-									`(or ,(map (lambda (ex)
-												(run ex params env)) exps)))))
-							
-						(else (error 'pe->lex-pe (format "~s is not legal parsed expression" pe)))) )))
-	
-	(lambda (pe)
-		(run pe '() '()))))
-		
+        (letrec ((run
+                        (lambda (pe params env)
+                                (cond   ((tag? 'const pe) pe)
+                                                ((tag? 'var pe)
+                                                        (with pe
+                                                                (lambda (_ v)
+                                                                        (search-in-rib v params
+                                                                                (lambda (min) `(pvar ,v ,min))
+                                                                                (lambda() (search-in-ribs v env
+                                                                                        (lambda (min maj) `(bvar ,v ,min ,maj))
+                                                                                        (lambda () `(fvar ,v)) ))))))
+                                                ((tag? 'if-3 pe)
+                                                        (with pe
+                                                                (lambda (_ test dit dif)
+                                                                        `(if-3 ,(run test params env) ,(run dit params env) ,(run dif params env)))))
+                                                ((tag? 'lambda-simple pe)
+                                                        (with pe
+                                                                (lambda (_ args body)
+                                                                        `(lambda-simple ,args ,(run body args (cons params env))))))
+
+                                                ((tag? 'lambda-opt pe)
+                                                        (with pe
+                                                                (lambda (_ args opt body)
+                                                                        (let ((args2 `(,@args ,opt)))
+                                                                        `(lambda-opt ,args ,opt ,(run body args2 (cons params env)))))))
+
+                                                ((tag? 'lambda-variadic pe)
+                                                        (with pe
+                                                                (lambda (_ args body)
+                                                                        `(lambda-variadic ,args ,(run body (list args) (cons params env))))))
+
+                                                ((tag? 'define pe)
+                                                        (with pe
+                                                                (lambda (_ var exp)
+                                                                        `(define ,(run var params env) ,(run exp params env)))))
+                                                ((or (tag? 'applic pe) )
+                                                        (with pe
+                                                                (lambda (tag proc args)
+                                                                        `(,tag ,(run proc params env) ,(map (lambda (ex)
+                                                                                                                                                        (run ex params env)) args)))))
+                                                ((tag? 'seq pe)
+                                                        (with pe
+                                                                (lambda (_ exps)
+                                                                        `(seq ,(map (lambda (ex)
+                                                                                                (run ex params env)) exps)))))
+                                                ((tag? 'or pe)
+                                                        (with pe
+                                                                (lambda (_ exps)
+                                                                        `(or ,(map (lambda (ex)
+                                                                                                (run ex params env)) exps)))))
+
+                                                (else (error 'pe->lex-pe (format "~s is not legal parsed expression" pe)))) )))
+
+        (lambda (pe)
+                (run pe '() '()))))
+
 ;;;Task2
 
 
 (define annotate-tc
   (letrec ((divide-tc
-			(lambda (pe new-tc?)
-				`(,@(map (lambda (x)
-							(run x #f))
-					(list-head (cadr pe) (- (length (cadr pe)) 1))) ,(run (car (reverse (cadr pe))) new-tc?))))
-  
-			(all-but-last 
-			(lambda (pe func tc?)
-				(if (null? (cdr pe))
-				(func (car pe) tc?)
-				(cons (func (car pe) #f) (all-but-last (cdr pe) func tc?)))))
-		(run
+                        (lambda (pe new-tc?)
+                                `(,@(map (lambda (x)
+                                                        (run x #f))
+                                        (list-head (cadr pe) (- (length (cadr pe)) 1))) ,(run (car (reverse (cadr pe))) new-tc?))))
+
+                        (all-but-last
+                        (lambda (pe func tc?)
+                                (if (null? (cdr pe))
+                                (func (car pe) tc?)
+                                (cons (func (car pe) #f) (all-but-last (cdr pe) func tc?)))))
+                (run
           (lambda (pe tc?)
             (cond ((tag? 'const pe) pe)
                   ((tag? 'fvar pe) pe)
                   ((tag? 'pvar pe) pe)
                   ((tag? 'bvar pe) pe)
-				  ((tag? 'if-3 pe)
+                                  ((tag? 'if-3 pe)
                    (with pe
                          (lambda (_ test dit dif)
                            `(if-3 ,(run test #f)
@@ -806,16 +806,11 @@
                   ((tag? 'or pe) `(or ,(divide-tc pe tc?)))
                   (else (error 'annotate-tc (format "~s is not legal parsed expression" pe)))))))
     (lambda (pe)
-      (run pe #t))))
-	  
-;;;;
-		
-(define test
-	(lambda (e)
-		(annotate-tc
-			(pe->lex-pe (parse e)))))
-			
+      (run pe #f)))) ;we changed it to #f on 12.2.13
 
-										
-					
-					
+;;;;
+
+(define test
+        (lambda (e)
+                (annotate-tc
+                        (pe->lex-pe (parse e)))))

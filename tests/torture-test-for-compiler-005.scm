@@ -3,7 +3,7 @@
 ;;;
 ;;; Programmer: Mayer Goldberg, 2010
 
-(compile '(((((lambda (x) (x (x x)))
+(test '(((((lambda (x) (x (x x)))
              (lambda (x)
                (lambda (y)
                  (x (x y)))))
@@ -17,3 +17,8 @@
           (lambda (x)
             (lambda (y)
               x))))
+
+(compile '(let* ((a #t)
+              (a (if a #f #t))
+              (b #f))
+         b))
