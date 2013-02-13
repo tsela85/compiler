@@ -1,6 +1,6 @@
 /* io/putchar.asm
  * Print a char to stdout
- * 
+ *
  * Programmer: Mayer Goldberg, 2010
  */
 

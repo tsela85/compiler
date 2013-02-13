@@ -96,7 +96,7 @@ extern Machine *machine;
 #define XOR(x, y) { (x) ^= (y); }
 #define NEG(x) { (x) = ~(x); }
 
-#define BEGIN_LOCAL_LABELS { __label__
+#define BEGIN_LOCAL_LAELS { __label__
 #define END_LOCAL_LABELS }
 
 #define CALL(subr) {			\

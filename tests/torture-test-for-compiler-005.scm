@@ -3,7 +3,7 @@
 ;;;
 ;;; Programmer: Mayer Goldberg, 2010
 
-(test '(((((lambda (x) (x (x x)))
+(compile '(((((lambda (x) (x (x x)))
              (lambda (x)
                (lambda (y)
                  (x (x y)))))
@@ -21,4 +21,35 @@
 (compile '(let* ((a #t)
               (a (if a #f #t))
               (b #f))
-         b))
+            b))
+
+(compile '(let* ((a #t)
+              (a (if a #f #t))
+              (b #f)
+              (b (or b #t)))
+         a))
+
+
+(code-gen (test '((lambda (a c d h) ;;
+            ((lambda (b e)          ;;
+               b) #f #f))           ;;
+                  #t #t #t #t)))    ;;
+(compile '((lambda (a c d h)        ;;
+             ((lambda (b e)         ;;
+                b) #f #f))          ;;
+           #t #t #t #t))            ;;
+
+(compile '((lambda (a b c)
+             ((lambda (b c)
+                ((lambda (d) d)
+                 ((lambda (g) #f) #t)))
+              #f #f))
+           #t #t #t))
+
+(compile '((lambda (a c)
+          ((lambda b
+           ((lambda (d e) d)
+            #t #t))
+              ))
+           #f #f))
+(compile '((lambda a a) ))
