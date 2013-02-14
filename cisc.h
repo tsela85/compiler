@@ -12,8 +12,13 @@
 #define Mega(n) (Kilo(n) << 10)
 #define Giga(n) (Mega(n) << 10)
 
+<<<<<<< HEAD
 #define RAM_SIZE Mega(10) //TODO: 100
 #define STACK_SIZE Mega(10) //TODO: 64
+=======
+#define RAM_SIZE Mega(1) //TODO : 100
+#define STACK_SIZE Mega(1) //TODO : 64
+>>>>>>> nani
 
 #define WORD_SIZE (sizeof(long))
 
@@ -96,7 +101,11 @@ extern Machine *machine;
 #define XOR(x, y) { (x) ^= (y); }
 #define NEG(x) { (x) = ~(x); }
 
+<<<<<<< HEAD
 #define BEGIN_LOCAL_LAELS { __label__
+=======
+#define BEGIN_LOCAL_LABELS { __label__
+>>>>>>> nani
 #define END_LOCAL_LABELS }
 
 #define CALL(subr) {			\
