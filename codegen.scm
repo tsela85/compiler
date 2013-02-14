@@ -474,7 +474,7 @@ error:
                 "//applic drop number of args" nl
 ;                "DROP(IMM("m"+2));" nl ; //TODO: m+2
                 "MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp " nl
-                "printf(\"drop: %d fp: %d\\n\",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );" nl
+;                "printf(\"drop: %d fp: %d\\n\",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );" nl
                  "DROP(IMM(STARG(IMM(0))+IMM(2)));" nl
 ;                "MOV(SP,FP); //TODO: remove" nl
 
