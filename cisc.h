@@ -13,15 +13,15 @@
 #define Giga(n) (Mega(n) << 10)
 
 
-#define RAM_SIZE Mega(10) //TODO: 100
-#define STACK_SIZE Mega(10) //TODO: 64
+#define RAM_SIZE Mega(100) //TODO: 100
+#define STACK_SIZE Mega(64) //TODO: 64
 
 #define WORD_SIZE (sizeof(long))
 
 typedef struct Machine {
   long mem[RAM_SIZE];
   long stack[STACK_SIZE];
-  long r0, r1, r2, r3, r4, r5, r6, r7,
+  long r0, r1, r2,r3, r4, r5, r6, r7,
        r8, r9, r10, r11, r12, r13, r14, r15;
   long sp, fp;
   long test_result;

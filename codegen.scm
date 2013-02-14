@@ -34,6 +34,9 @@
           ((tag? 'lambda-simple pe) (code-gen-lambda-s pe))
           ((tag? 'lambda-variadic pe) (code-gen-lambda-var pe))
           ((tag? 'lambda-opt pe) (code-gen-lambda-opt pe))
+
+;          ((tag? 'tc-applic pe) (tag? 'applic pe))
+;          ((tag? 'tc-applic pe) (code-gen-applic pe))
           (else "not implemented")
           )))
 

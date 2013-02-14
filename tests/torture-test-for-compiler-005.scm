@@ -67,3 +67,7 @@
 
 (compile '((lambda a a) #t #t #t #t))
 (compile '((lambda (a b . d) d) #t #t #t #t #t #t))
+
+
+(compile '(begin (define x (lambda (x y) y)) (x #t #f)))
+(compile '(begin (define x (lambda (x y) x)) (x #t #f)))
