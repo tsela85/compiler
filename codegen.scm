@@ -30,9 +30,10 @@
           ((or (tag? 'tc-applic pe) (tag? 'applic pe))
            (code-gen-applic pe))
 ;          ((tag? 'applic pe) (code-gen-applic pe))
-;          ((tag? 'tc-applic pe) (code-gen-tc-applic pe))
+;          ((tag? 'tc-applic pe) (code-gen-tc-applic2 pe))
           ((tag? 'lambda-simple pe) (code-gen-lambda-s pe))
           ((tag? 'lambda-variadic pe) (code-gen-lambda-var pe))
+          ((tag? 'lambda-opt pe) (code-gen-lambda-opt pe))
           (else "not implemented")
           )))
 
@@ -229,12 +230,6 @@ error:
                          (label-clos-exit (^label-clos-exit))
                   (lambda-code
                   (string-append
-                  ;"//creating sob of size 3 and put 'T_CLOSURE' in the 0th place" nl
-                  ;"PUSH(IMM(3));" nl
-                  ;"CALL(MALLOC);" nl
-                  ;"DROP(IMM(1));" nl
-                  ;"MOV(INDD(R0,0),T_CLOSURE);" nl
-                  ;"MOV(R1,R0); //r1 holds a pointer to the closure struct" nl
                   "//extending the env by 1" nl
                   "//allocating space for the new env" nl
                   "PUSH(IMM("(number->string env-size)"));" nl
@@ -243,27 +238,25 @@ error:
                   "MOV(R2,R0); //R2 <- new env" nl
                   "//shifting the old enviroment" nl
                   "MOV(R1,FPARG(IMM(0))); //R1 <- env" nl
-                  ;"int i,j;" nl
+
                   "//R2[j] <- R1[i]" nl
                   "for(i=0,j=1;i<"(number->string (- env-size 1))";++i,++j){" nl
-                  ;"  MOV(R3,INDD(R1,IMM(i))); //R3 <- env[i]" nl
-                  ;"  MOV(INDD(R2,IMM(j)),R3); //R2[j] <- R3" nl
+
                   "  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));" nl
                   "}" nl
-                  ;"MOV(INDD(R1,IMM(1)),R3); //R1[1] <- new env" nl
+
                   "//moving params from the stack to the first list in env" nl
                   "//allocating space" nl
                   "PUSH(FPARG(IMM(1)));" nl
                   "CALL(MALLOC);" nl
                   "DROP(IMM(1));" nl
                   "MOV(R3,R0); // R3 <- new env[0]" nl
-                  ;"MOV(R6,FPARG(IMM(1)));//R6 <- counter for the params" nl
-                  ;"i=R6;"
+
                   "for (i=0;i<FPARG(IMM(1));++i) { " nl
                   "  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]" nl
                   "}" nl
                   "MOV(INDD(R2,0),R3); // new env[0] <- R3" nl
-                  ;"MOV(INDD(R1,1),R3); // R1[1] <- R3" nl
+
                   "PUSH(LABEL("label-clos"));" nl
                   "PUSH(R2);" nl
                   "CALL(MAKE_SOB_CLOSURE);" nl
@@ -345,13 +338,20 @@ error:
                   "//fixing stack to conatin the list" nl
                   "MOV(FPARG(IMM(1)),IMM(1));//change amount of a to  1" nl
                   "MOV(FPARG(IMM(2)),R0);//change the first element to the list we made" nl
+                  "//push down the stack" nl
+                  "for(i=0; i < 5 ; i++) {" nl
+                  "   MOV(FPARG(IMM(R3 + 1-i)),FPARG(IMM(2-i)));" nl
+                  "}" nl
+                  "DROP(R3-1); //update SP" nl
+                  "MOV(FP,SP); //update FP" nl
                   "JUMP("label-clos-body");" nl
                   label-clos-nil ":" nl
                   "for(i = -2;i < 2;i++) {" nl
-                  "   MOV(FPARG(i),FPARG(i+1));"
+                  "   MOV(FPARG(i-1),FPARG(i));" nl
                   "}" nl
                   "INCR(FP);" nl
                   "INCR(SP);" nl
+                  "MOV(FPARG(IMM(1)),IMM(1));//change amount of a to  1" nl
                   "MOV(FPARG(IMM(2)),SOB_NIL);//change the first element to the list we made" nl
                   label-clos-body ":" nl
                   "  //lambda-body" nl
@@ -366,28 +366,118 @@ error:
                   lambda-code)))))
 
 
+(define code-gen-lambda-opt
+  (lambda (e)
+    (with e
+          (lambda (_ args opt body)
+            (set! env-size (+ env-size 1))
+            (let* ((label-clos (^label-clos-code))
+                   (label-clos-exit (^label-clos-exit))
+                   (label-clos-nil (^label-clos-nil))
+                   (label-clos-body (^label-clos-body))
+                   (args-size (number->string (length args)))
+                   (lambda-code
+                    (string-append
+                  "//extending the env by 1" nl
+                  "//allocating space for the new env" nl
+                  "PUSH(IMM("(number->string env-size)"));" nl
+                  "CALL(MALLOC);" nl
+                  "DROP(IMM(1));" nl
+                  "MOV(R2,R0); //R2 <- new env" nl
+                  "//shifting the old enviroment" nl
+                  "MOV(R1,FPARG(IMM(0))); //R1 <- env" nl
+                  "//R2[j] <- R1[i]" nl
+                  "for(i=0,j=1;i<"(number->string (- env-size 1))";++i,++j){" nl
+                  "  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));" nl
+                  "}" nl
+                  "//moving params from the stack to the first list in env" nl
+                  "//allocating space" nl
+                  "PUSH(FPARG(IMM(1)));" nl
+                  "CALL(MALLOC);" nl
+                  "DROP(IMM(1));" nl
+                  "MOV(R3,R0); // R3 <- new env[0]" nl
+                  "for (i=0;i<FPARG(IMM(1));++i) { " nl
+                  "  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]" nl
+                  "}" nl
+                  "MOV(INDD(R2,0),R3); // new env[0] <- R3" nl
+                  "PUSH(LABEL("label-clos"));" nl
+                  "PUSH(R2);" nl
+                  "CALL(MAKE_SOB_CLOSURE);" nl
+                  "DROP(IMM(2));" nl
+                  "JUMP("label-clos-exit");" nl
+                  label-clos":" nl
+                  "  PUSH(FP);" nl
+                  "  MOV(FP,SP);" nl
+                  "MOV(R3,FPARG(IMM(1))); //R3<-amount of args" nl
+                  "CMP(IMM(0),R3 - "args-size"); //check if opt count = 0" nl
+                  "JUMP_EQ("label-clos-nil");" nl
+                  "//converting OPT args to list args: " args-size  nl
+                  "MOV(R4,FPARG(IMM(R3 + 1))); //R4<- last arg" nl
+                  "PUSH(SOB_NIL); //last element is nil" nl
+                  "PUSH(R4); //last arg" nl
+                  "CALL(MAKE_SOB_PAIR);" nl
+                  "DROP(IMM(2));" nl
+                  "for(i = R3; i >  "args-size" + 1;i--) {" nl
+                  "   PUSH(R0); //previous pair" nl
+                  "   PUSH(FPARG(i)); // next element" nl
+                  "   CALL(MAKE_SOB_PAIR);" nl
+                  "   DROP(IMM(2));" nl
+                  "}" nl
+
+                  "//lambda-opt fixing stack to conatin the list" nl
+                  "MOV(FPARG(IMM(1)),"(number->string (+ (string->number args-size)   1))  ");//change amount of a to arg: " args-size " +1" nl
+                  "MOV(FPARG(IMM("(number->string (+ 2 (string->number args-size) )) ")),R0);//change the first opt to the list we made" nl
+
+                  "//lambda-opt push down the stack" nl
+                  "for(i=0; i <= R3-"args-size"+2 ; i++) {" nl
+                  "   MOV(FPARG(IMM(R3 + 1-i)),FPARG(IMM("(number->string (+ 2 (string->number args-size) ))"-i)));" nl
+                  "}" nl
+                  "DROP(R3-"args-size"-1); //update SP" nl
+                  "MOV(FP,SP); //update FP" nl
+                  "JUMP("label-clos-body");" nl
+                  label-clos-nil ":" nl
+                  "for(i = -2;i < "(number->string (+ 2 (string->number args-size) )) ";i++) {" nl
+                  "   MOV(FPARG(i-1),FPARG(i));"
+                  "}" nl
+                  "INCR(FP);" nl
+                  "INCR(SP);" nl
+                  "MOV(FPARG(IMM(1)),"(number->string (+ (string->number args-size)  1))  ");//change amount of a to arg: " args-size " +1" nl
+                  "MOV(FPARG(IMM("(number->string (+ 2 (string->number args-size) )) ")),SOB_NIL);//change the first element to the list we made" nl
+                  label-clos-body ":" nl
+                  "  //lambda-body" nl
+                  "  "(code-gen body) nl
+                  "  POP(FP);" nl
+                  "  RETURN;" nl
+                  label-clos-exit":" nl
+
+                  )))
+                  (set! env-size (- env-size 1))
+                  lambda-code)))))
+
+
 (define code-gen-applic
   (lambda (e)
     (with e
           (lambda (_ proc ex-list)
             (let ((label-err (^label-applic-err))
                       (m (number->string (length ex-list))))
-                (string-append
+              (string-append
                 "//applic pushing args to stack" nl
             (code-gen-applic-helper (reverse ex-list)) nl
                 "//applic pushing number of args" nl
                 "PUSH(IMM("m"));" nl
-;                "PUSH(IMM(FPARG(1)));" nl
                 (code-gen proc) nl
                 "CMP(INDD(R0,0),T_CLOSURE);" nl
                 "JUMP_NE(error);" nl
-                "PUSH(INDD(R0,IMM(1)));" nl
+                "PUSH(INDD(R0,IMM(1)));//push clousre env" nl
                 "CALLA(INDD(R0,IMM(2)));" nl
                 "//applic drop number of args" nl
-                "DROP(IMM("m"+2));" nl ; //TODO: m+2
-;                "DROP(IMM(FPARG(IMM(1))+IMM(2)));" nl
-                "printf(\"m: " m " FPARG(1): %d \\n \" ,FPARG(1));" nl
-                "printf(\"FPARG(0): %d FPARG(2): %d FPARG(3): %d\\n \" ,FPARG(0),FPARG(2),FPARG(3));" nl
+;                "DROP(IMM("m"+2));" nl ; //TODO: m+2
+                "MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp " nl
+                "printf(\"drop: %d fp: %d\\n\",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );" nl
+                 "DROP(IMM(STARG(IMM(0))+IMM(2)));" nl
+;                "MOV(SP,FP); //TODO: remove" nl
+
                 ))))))
 
 (define code-gen-tc-applic
@@ -415,18 +505,47 @@ error:
                "MOV(R15,FPARG(-2)) //saving old fp" nl
                "MOV(R2,FPARG(IMM(1))); //saving old number of n" nl
                "//copy stack to old stack" nl
-;               "for(i=0; i < IMM(FPARG(1))+3;i++) {" nl
-               "for(i=0; i < "m"+3;i++) {" nl
+               "for(i=0; i < IMM(STARG(IMM(0)))+3;i++) {" nl
+;               "for(i=0; i < "m"+3;i++) {" nl
                "  MOV(FPARG(R2 + 1 -i),LOCAL(i));" nl
                "}" nl
                "//NOT SURE THAT IT IS TRUE - update sp" nl
                "//update sp to size of frame" nl
-               "MOV(SP,R15 + 3 +" m ");" nl
+;               "MOV(SP,R15 + 3 +" m ");" nl
 ;               "MOV(SP,R15 + 3 + IMM(FPARG(1)));" nl
+               "MOV(SP,R15 + 3 + IMM(STARG(IMM(0))));" nl
                "//tc-applic  get old fp to run over the old stack" nl
                "MOV(FP,R15)" nl
   "printf(\"NEW FP: %d\\n \",FP); printf(\"NEW SP: %d\\n\",SP);" nl
                "JUMPA(INDD(R0,2));"nl
+               ))))))
+
+(define code-gen-tc-applic2
+  (lambda (e)
+    (with e
+          (lambda (_ proc ex-list)
+            (let ((label-err (^label-applic-err))
+                  (m (number->string (length ex-list))))
+              (string-append
+               "//tc-applic pushing args to stack" nl
+               (code-gen-applic-helper (reverse ex-list)) nl
+               "//tc-applic pushing number of args" nl
+               "PUSH(IMM("m"));" nl
+               (code-gen proc) nl
+               "CMP(INDD(R0,0),T_CLOSURE);" nl
+               "JUMP_NE(error);" nl
+               "PUSH(INDD(R0,IMM(1)));//push closure env" nl
+               "//tc-applic changes" nl
+               "PUSH(FPARG(IMM(-1))); //pushing to the top of the frame  the ret of the old frame" nl
+               "MOV(R1,FPARG(-2)); //R1<-prev frame fp" nl
+               "MOV(R2,STARG(1)); //R2<- amount of current args" nl
+               "//copy current frame to old frame" nl
+               "for(i=0; i < R2 + 3; i++) {" nl
+               "   MOV(STACK(R1 + i),LOCAL(i));" nl
+               "}" nl
+               "MOV(FP,R1); //update fp" nl
+               "MOV(SP,FP + R2 + 3); //SP<- old fp + args count + 3" nl
+               "JUMPA(INDD(R0,2)); //tc-applic jumpint to cluser code"nl
                ))))))
 
 

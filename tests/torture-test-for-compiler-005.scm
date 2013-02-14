@@ -52,4 +52,18 @@
             #t #t))
               ))
            #f #f))
-(compile '((lambda a a) ))
+
+
+(compile '((lambda (a c)
+             ((lambda b
+                ((lambda (d . e)
+                 ((lambda (q w . r)
+                    r)
+                  #t #t #f #f #t #t #f))
+                 #t #t #t))
+              ))
+           #f #f))
+
+
+(compile '((lambda a a) #t #t #t #t))
+(compile '((lambda (a b . d) d) #t #t #t #t #t #t))

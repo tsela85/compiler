@@ -59,13 +59,6 @@ PUSH(FP);
 MOV(FP,SP);
 int i,j;
 //applic pushing args to stack
-MOV(R0,SOB_BOOLEAN_FALSE);
-PUSH(R0);
-MOV(R0,SOB_BOOLEAN_FALSE);
-PUSH(R0);
-
-//applic pushing number of args
-PUSH(IMM(2));
 //extending the env by 1
 //allocating space for the new env
 PUSH(IMM(1));
@@ -88,19 +81,169 @@ for (i=0;i<FPARG(IMM(1));++i) {
   MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
 }
 MOV(INDD(R2,0),R3); // new env[0] <- R3
-PUSH(LABEL(L_clos_code_14));
+PUSH(LABEL(L_clos_code_18));
 PUSH(R2);
 CALL(MAKE_SOB_CLOSURE);
 DROP(IMM(2));
-JUMP(L_clos_exit_14);
-L_clos_code_14:
+JUMP(L_clos_exit_18);
+L_clos_code_18:
+  PUSH(FP);
+  MOV(FP,SP);
+  //lambda-body
+  //extending the env by 1
+//allocating space for the new env
+PUSH(IMM(2));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R2,R0); //R2 <- new env
+//shifting the old enviroment
+MOV(R1,FPARG(IMM(0))); //R1 <- env
+//R2[j] <- R1[i]
+for(i=0,j=1;i<1;++i,++j){
+  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));
+}
+//moving params from the stack to the first list in env
+//allocating space
+PUSH(FPARG(IMM(1)));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R3,R0); // R3 <- new env[0]
+for (i=0;i<FPARG(IMM(1));++i) { 
+  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
+}
+MOV(INDD(R2,0),R3); // new env[0] <- R3
+PUSH(LABEL(L_clos_code_19));
+PUSH(R2);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+JUMP(L_clos_exit_19);
+L_clos_code_19:
+  PUSH(FP);
+  MOV(FP,SP);
+  //lambda-body
+  //bvar: maj: 0, min: 0
+//the var name is: x
+MOV(R0,FPARG(IMM(0)));
+MOV(R0,INDD(R0,IMM(0)));
+MOV(R0,INDD(R0,IMM(0)));
+
+  POP(FP);
+  RETURN;
+L_clos_exit_19:
+
+  POP(FP);
+  RETURN;
+L_clos_exit_18:
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+//applic pushing args to stack
+//extending the env by 1
+//allocating space for the new env
+PUSH(IMM(1));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R2,R0); //R2 <- new env
+//shifting the old enviroment
+MOV(R1,FPARG(IMM(0))); //R1 <- env
+//R2[j] <- R1[i]
+for(i=0,j=1;i<0;++i,++j){
+  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));
+}
+//moving params from the stack to the first list in env
+//allocating space
+PUSH(FPARG(IMM(1)));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R3,R0); // R3 <- new env[0]
+for (i=0;i<FPARG(IMM(1));++i) { 
+  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
+}
+MOV(INDD(R2,0),R3); // new env[0] <- R3
+PUSH(LABEL(L_clos_code_17));
+PUSH(R2);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+JUMP(L_clos_exit_17);
+L_clos_code_17:
   PUSH(FP);
   MOV(FP,SP);
   //lambda-body
   //applic pushing args to stack
+MOV(R0,SOB_BOOLEAN_FALSE);
+PUSH(R0);
 
 //applic pushing number of args
-PUSH(IMM(0));
+PUSH(IMM(1));
+//applic pushing args to stack
+MOV(R0,SOB_BOOLEAN_TRUE);
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+MOV(R0,FPARG(IMM(2+0)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+  POP(FP);
+  RETURN;
+L_clos_exit_17:
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+//applic pushing args to stack
+//extending the env by 1
+//allocating space for the new env
+PUSH(IMM(1));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R2,R0); //R2 <- new env
+//shifting the old enviroment
+MOV(R1,FPARG(IMM(0))); //R1 <- env
+//R2[j] <- R1[i]
+for(i=0,j=1;i<0;++i,++j){
+  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));
+}
+//moving params from the stack to the first list in env
+//allocating space
+PUSH(FPARG(IMM(1)));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R3,R0); // R3 <- new env[0]
+for (i=0;i<FPARG(IMM(1));++i) { 
+  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
+}
+MOV(INDD(R2,0),R3); // new env[0] <- R3
+PUSH(LABEL(L_clos_code_13));
+PUSH(R2);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+JUMP(L_clos_exit_13);
+L_clos_code_13:
+  PUSH(FP);
+  MOV(FP,SP);
+  //lambda-body
+  //applic pushing args to stack
 //extending the env by 1
 //allocating space for the new env
 PUSH(IMM(2));
@@ -123,50 +266,16 @@ for (i=0;i<FPARG(IMM(1));++i) {
   MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
 }
 MOV(INDD(R2,0),R3); // new env[0] <- R3
-PUSH(LABEL(L_clos_code_15));
+PUSH(LABEL(L_clos_code_14));
 PUSH(R2);
 CALL(MAKE_SOB_CLOSURE);
 DROP(IMM(2));
-JUMP(L_clos_exit_15);
-L_clos_code_15:
+JUMP(L_clos_exit_14);
+L_clos_code_14:
   PUSH(FP);
   MOV(FP,SP);
-//converting args to list
-MOV(R3,FPARG(IMM(1))); //R3<-amount of args
-CMP(IMM(0),R3); //check if args count = 0
-JUMP_EQ(L_clos_nil_10);
-MOV(R4,FPARG(IMM(R3 + 1))); //R4<- last arg
-PUSH(SOB_NIL); //last element is nil
-PUSH(R4); //last arg
-CALL(MAKE_SOB_PAIR);
-DROP(IMM(2));
-for(i = R3; i > 1;i--) {
-   PUSH(R0); //previous pair
-   PUSH(FPARG(i)); // next element
-   CALL(MAKE_SOB_PAIR);
-   DROP(IMM(2));
-}
-//fixing stack to conatin the list
-MOV(FPARG(IMM(1)),IMM(1));//change amount of a to  1
-MOV(FPARG(IMM(2)),R0);//change the first element to the list we made
-JUMP(L_clos_body_10);
-L_clos_nil_10:
-for(i = -2;i < 2;i++) {
-   MOV(FPARG(i),FPARG(i+1));}
-INCR(FP);
-INCR(SP);
-MOV(FPARG(IMM(2)),SOB_NIL);//change the first element to the list we made
-L_clos_body_10:
   //lambda-body
-  //applic pushing args to stack
-MOV(R0,SOB_BOOLEAN_TRUE);
-PUSH(R0);
-MOV(R0,SOB_BOOLEAN_TRUE);
-PUSH(R0);
-
-//applic pushing number of args
-PUSH(IMM(2));
-//extending the env by 1
+  //extending the env by 1
 //allocating space for the new env
 PUSH(IMM(3));
 CALL(MALLOC);
@@ -188,6 +297,37 @@ for (i=0;i<FPARG(IMM(1));++i) {
   MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
 }
 MOV(INDD(R2,0),R3); // new env[0] <- R3
+PUSH(LABEL(L_clos_code_15));
+PUSH(R2);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+JUMP(L_clos_exit_15);
+L_clos_code_15:
+  PUSH(FP);
+  MOV(FP,SP);
+  //lambda-body
+  //extending the env by 1
+//allocating space for the new env
+PUSH(IMM(4));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R2,R0); //R2 <- new env
+//shifting the old enviroment
+MOV(R1,FPARG(IMM(0))); //R1 <- env
+//R2[j] <- R1[i]
+for(i=0,j=1;i<3;++i,++j){
+  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));
+}
+//moving params from the stack to the first list in env
+//allocating space
+PUSH(FPARG(IMM(1)));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R3,R0); // R3 <- new env[0]
+for (i=0;i<FPARG(IMM(1));++i) { 
+  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
+}
+MOV(INDD(R2,0),R3); // new env[0] <- R3
 PUSH(LABEL(L_clos_code_16));
 PUSH(R2);
 CALL(MAKE_SOB_CLOSURE);
@@ -197,46 +337,304 @@ L_clos_code_16:
   PUSH(FP);
   MOV(FP,SP);
   //lambda-body
-  MOV(R0,FPARG(IMM(2+0)));
+  //applic pushing args to stack
+//bvar: maj: 1, min: 0
+//the var name is: x
+MOV(R0,FPARG(IMM(0)));
+MOV(R0,INDD(R0,IMM(1)));
+MOV(R0,INDD(R0,IMM(0)));
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+//applic pushing args to stack
+//bvar: maj: 0, min: 0
+//the var name is: y
+MOV(R0,FPARG(IMM(0)));
+MOV(R0,INDD(R0,IMM(0)));
+MOV(R0,INDD(R0,IMM(0)));
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+MOV(R0,FPARG(IMM(2+0)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
 
   POP(FP);
   RETURN;
 L_clos_exit_16:
 
-CMP(INDD(R0,0),T_CLOSURE);
-JUMP_NE(error);
-PUSH(INDD(R0,IMM(1)));
-CALLA(INDD(R0,IMM(2)));
-//applic drop number of args
-DROP(IMM(2+2));
-printf("m: 2 FPARG(1): %d \n " ,FPARG(1));
-printf("FPARG(0): %d FPARG(2): %d FPARG(3): %d\n " ,FPARG(0),FPARG(2),FPARG(3));
-
   POP(FP);
   RETURN;
 L_clos_exit_15:
-
-CMP(INDD(R0,0),T_CLOSURE);
-JUMP_NE(error);
-PUSH(INDD(R0,IMM(1)));
-CALLA(INDD(R0,IMM(2)));
-//applic drop number of args
-DROP(IMM(0+2));
-printf("m: 0 FPARG(1): %d \n " ,FPARG(1));
-printf("FPARG(0): %d FPARG(2): %d FPARG(3): %d\n " ,FPARG(0),FPARG(2),FPARG(3));
 
   POP(FP);
   RETURN;
 L_clos_exit_14:
 
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+MOV(R0,FPARG(IMM(2+0)));
+
 CMP(INDD(R0,0),T_CLOSURE);
 JUMP_NE(error);
-PUSH(INDD(R0,IMM(1)));
+PUSH(INDD(R0,IMM(1)));//push clousre env
 CALLA(INDD(R0,IMM(2)));
 //applic drop number of args
-DROP(IMM(2+2));
-printf("m: 2 FPARG(1): %d \n " ,FPARG(1));
-printf("FPARG(0): %d FPARG(2): %d FPARG(3): %d\n " ,FPARG(0),FPARG(2),FPARG(3));
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+  POP(FP);
+  RETURN;
+L_clos_exit_13:
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+//applic pushing args to stack
+//extending the env by 1
+//allocating space for the new env
+PUSH(IMM(1));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R2,R0); //R2 <- new env
+//shifting the old enviroment
+MOV(R1,FPARG(IMM(0))); //R1 <- env
+//R2[j] <- R1[i]
+for(i=0,j=1;i<0;++i,++j){
+  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));
+}
+//moving params from the stack to the first list in env
+//allocating space
+PUSH(FPARG(IMM(1)));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R3,R0); // R3 <- new env[0]
+for (i=0;i<FPARG(IMM(1));++i) { 
+  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
+}
+MOV(INDD(R2,0),R3); // new env[0] <- R3
+PUSH(LABEL(L_clos_code_11));
+PUSH(R2);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+JUMP(L_clos_exit_11);
+L_clos_code_11:
+  PUSH(FP);
+  MOV(FP,SP);
+  //lambda-body
+  //extending the env by 1
+//allocating space for the new env
+PUSH(IMM(2));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R2,R0); //R2 <- new env
+//shifting the old enviroment
+MOV(R1,FPARG(IMM(0))); //R1 <- env
+//R2[j] <- R1[i]
+for(i=0,j=1;i<1;++i,++j){
+  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));
+}
+//moving params from the stack to the first list in env
+//allocating space
+PUSH(FPARG(IMM(1)));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R3,R0); // R3 <- new env[0]
+for (i=0;i<FPARG(IMM(1));++i) { 
+  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
+}
+MOV(INDD(R2,0),R3); // new env[0] <- R3
+PUSH(LABEL(L_clos_code_12));
+PUSH(R2);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+JUMP(L_clos_exit_12);
+L_clos_code_12:
+  PUSH(FP);
+  MOV(FP,SP);
+  //lambda-body
+  //applic pushing args to stack
+//applic pushing args to stack
+MOV(R0,FPARG(IMM(2+0)));
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+//bvar: maj: 0, min: 0
+//the var name is: x
+MOV(R0,FPARG(IMM(0)));
+MOV(R0,INDD(R0,IMM(0)));
+MOV(R0,INDD(R0,IMM(0)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+//bvar: maj: 0, min: 0
+//the var name is: x
+MOV(R0,FPARG(IMM(0)));
+MOV(R0,INDD(R0,IMM(0)));
+MOV(R0,INDD(R0,IMM(0)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+  POP(FP);
+  RETURN;
+L_clos_exit_12:
+
+  POP(FP);
+  RETURN;
+L_clos_exit_11:
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+//extending the env by 1
+//allocating space for the new env
+PUSH(IMM(1));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R2,R0); //R2 <- new env
+//shifting the old enviroment
+MOV(R1,FPARG(IMM(0))); //R1 <- env
+//R2[j] <- R1[i]
+for(i=0,j=1;i<0;++i,++j){
+  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));
+}
+//moving params from the stack to the first list in env
+//allocating space
+PUSH(FPARG(IMM(1)));
+CALL(MALLOC);
+DROP(IMM(1));
+MOV(R3,R0); // R3 <- new env[0]
+for (i=0;i<FPARG(IMM(1));++i) { 
+  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
+}
+MOV(INDD(R2,0),R3); // new env[0] <- R3
+PUSH(LABEL(L_clos_code_10));
+PUSH(R2);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+JUMP(L_clos_exit_10);
+L_clos_code_10:
+  PUSH(FP);
+  MOV(FP,SP);
+  //lambda-body
+  //applic pushing args to stack
+//applic pushing args to stack
+MOV(R0,FPARG(IMM(2+0)));
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+MOV(R0,FPARG(IMM(2+0)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(1));
+MOV(R0,FPARG(IMM(2+0)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+  POP(FP);
+  RETURN;
+L_clos_exit_10:
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+printf("drop: %d fp: %d\n",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );
+DROP(IMM(STARG(IMM(0))+IMM(2)));
 
   POP(FP);
 //  print_stack("dd");
