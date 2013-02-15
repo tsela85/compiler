@@ -2,7 +2,7 @@
 
 (define symbols '())
 (define buckets '())
-(define prims '(+ - * / cons car cdr))
+(define prims '(+ - * / cons car cdr set-car! set-cdr! apply))
 
 (define const-list
  `((10 ,void-object (937610))
@@ -35,6 +35,7 @@
 	  ((pair? pe) (add-const-pair pe consts))
 	  ((symbol? pe) (add-const-sym pe consts))
 	  ((number? pe) (add-const-num pe consts))
+	  ((string? pe) (add-const-string pe consts))
 	  (else 'error)
 	  )))
 	  ))
@@ -49,6 +50,14 @@
 		 addr)))
 	
 	;))
+	  
+(define add-const-string
+  (lambda (pe consts)
+    (let ((chars (map char->integer (string->list pe)))
+	      (str-addr next-mem))
+	(set! const-list (append const-list (list (list next-mem pe (cons 799345 (cons (length chars) chars))))))
+	(set! next-mem (+ next-mem 2 (length chars)))
+	str-addr)))
 	  
 (define add-const-sym
   (lambda (pe consts)

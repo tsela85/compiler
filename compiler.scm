@@ -279,7 +279,7 @@
 
 (define const?
   (lambda (sexpr)
-    (or (number? sexpr) (boolean? sexpr) (char? sexpr) (string? sexpr) )
+    (or (number? sexpr) (boolean? sexpr) (char? sexpr) (string? sexpr) (vector? sexpr))
     ))
 
 (define parse-const

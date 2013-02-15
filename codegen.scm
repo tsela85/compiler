@@ -161,7 +161,9 @@ error:
          ((boolean? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((number? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((symbol? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
-          (else 'error))))
+		  ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+		  ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+          (else 'error-code-gen-const))))
 
 (define code-gen-boolean
   (lambda (e)
@@ -612,6 +614,12 @@ error:
 	  (code-gen-prim '- "BIN_MINUS") nl
 	  (code-gen-prim '/ "BIN_DIV") nl
 	  (code-gen-prim '* "BIN_MUL") nl 
+	  (code-gen-prim 'cons "CONS") nl 
+	  (code-gen-prim 'car "CAR") nl 
+	  (code-gen-prim 'cdr "CDR") nl 
+	  (code-gen-prim 'set-car! "SET_CAR") nl 
+	  (code-gen-prim 'set-cdr! "SET_CDR") nl 
+	  (code-gen-prim 'apply "APPLY") nl 
 	  )))
 
 	   

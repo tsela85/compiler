@@ -7,9 +7,9 @@
 int main()
 {
   START_MACHINE;
-  int consts[]={937610, 722689, 741553, 0, 741553, 1, 799345, 1, 43, 368031, 68, 799345, 1, 45, 368031, 70, 799345, 1, 42, 368031, 72, 799345, 1, 47, 368031, 74, 799345, 4, 99, 111, 110, 115, 368031, 76, 799345, 3, 99, 97, 114, 368031, 78, 799345, 3, 99, 100, 114, 368031, 80, 945311, 2, 945311, 7, 945311, 9, 945311, 12, 945311, 1, 16, 0, 21, 0, 26, 0, 31, 0, 36, 0, 44, 0, 51, 0};
+  int consts[]={937610, 722689, 741553, 0, 741553, 1, 799345, 1, 43, 368031, 98, 799345, 1, 45, 368031, 100, 799345, 1, 42, 368031, 102, 799345, 1, 47, 368031, 104, 799345, 4, 99, 111, 110, 115, 368031, 106, 799345, 3, 99, 97, 114, 368031, 108, 799345, 3, 99, 100, 114, 368031, 110, 799345, 8, 115, 101, 116, 45, 99, 97, 114, 33, 368031, 112, 799345, 8, 115, 101, 116, 45, 99, 100, 114, 33, 368031, 114, 799345, 5, 97, 112, 112, 108, 121, 368031, 116, 799345, 5, 117, 118, 97, 115, 97, 16, 0, 21, 0, 26, 0, 31, 0, 36, 0, 44, 0, 51, 0, 58, 0, 70, 0, 82, 0};
   memcpy(&machine->mem[10],consts,sizeof(consts));
-   MOV(ADDR(0), IMM(82));
+   MOV(ADDR(0), IMM(118));
   void print_stack(char* comment){
         int i;
         printf("printing stack, FP: %d SP: %d %\n", (int)(FP), (int)(SP), comment);
@@ -58,7 +58,7 @@ PUSH(LABEL(BIN_PLUS));
 PUSH(0);
 CALL(MAKE_SOB_CLOSURE);
 DROP(IMM(2));
-MOV(R1,68);
+MOV(R1,98);
 MOV(INDD(R1,IMM(1)),R0);
 MOV(R0,SOB_VOID);
 
@@ -66,7 +66,7 @@ PUSH(LABEL(BIN_MINUS));
 PUSH(0);
 CALL(MAKE_SOB_CLOSURE);
 DROP(IMM(2));
-MOV(R1,70);
+MOV(R1,100);
 MOV(INDD(R1,IMM(1)),R0);
 MOV(R0,SOB_VOID);
 
@@ -74,7 +74,7 @@ PUSH(LABEL(BIN_DIV));
 PUSH(0);
 CALL(MAKE_SOB_CLOSURE);
 DROP(IMM(2));
-MOV(R1,74);
+MOV(R1,104);
 MOV(INDD(R1,IMM(1)),R0);
 MOV(R0,SOB_VOID);
 
@@ -82,96 +82,60 @@ PUSH(LABEL(BIN_MUL));
 PUSH(0);
 CALL(MAKE_SOB_CLOSURE);
 DROP(IMM(2));
-MOV(R1,72);
+MOV(R1,102);
+MOV(INDD(R1,IMM(1)),R0);
+MOV(R0,SOB_VOID);
+
+PUSH(LABEL(CONS));
+PUSH(0);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+MOV(R1,106);
+MOV(INDD(R1,IMM(1)),R0);
+MOV(R0,SOB_VOID);
+
+PUSH(LABEL(CAR));
+PUSH(0);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+MOV(R1,108);
+MOV(INDD(R1,IMM(1)),R0);
+MOV(R0,SOB_VOID);
+
+PUSH(LABEL(CDR));
+PUSH(0);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+MOV(R1,110);
+MOV(INDD(R1,IMM(1)),R0);
+MOV(R0,SOB_VOID);
+
+PUSH(LABEL(SET_CAR));
+PUSH(0);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+MOV(R1,112);
+MOV(INDD(R1,IMM(1)),R0);
+MOV(R0,SOB_VOID);
+
+PUSH(LABEL(SET_CDR));
+PUSH(0);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+MOV(R1,114);
+MOV(INDD(R1,IMM(1)),R0);
+MOV(R0,SOB_VOID);
+
+PUSH(LABEL(APPLY));
+PUSH(0);
+CALL(MAKE_SOB_CLOSURE);
+DROP(IMM(2));
+MOV(R1,116);
 MOV(INDD(R1,IMM(1)),R0);
 MOV(R0,SOB_VOID);
 
 
-//applic pushing args to stack
-MOV(R0,58);
-PUSH(R0);
-//applic pushing args to stack
-//applic pushing args to stack
-MOV(R0,60);
-PUSH(R0);
-MOV(R0,62);
-PUSH(R0);
-
-//applic pushing number of args
-PUSH(IMM(2));
-//fvar: -
-MOV(R0,70);
-MOV(R0,INDD(R0,IMM(1)));
-CMP(R0,0);
-JUMP_EQ(error);
-
-CMP(INDD(R0,0),T_CLOSURE);
-JUMP_NE(error);
-PUSH(INDD(R0,IMM(1)));//push clousre env
-CALLA(INDD(R0,IMM(2)));
-//applic drop number of args
-MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
-DROP(IMM(STARG(IMM(0))+IMM(2)));
-
-PUSH(R0);
-//applic pushing args to stack
-MOV(R0,64);
-PUSH(R0);
-MOV(R0,66);
-PUSH(R0);
-
-//applic pushing number of args
-PUSH(IMM(2));
-//fvar: +
-MOV(R0,68);
-MOV(R0,INDD(R0,IMM(1)));
-CMP(R0,0);
-JUMP_EQ(error);
-
-CMP(INDD(R0,0),T_CLOSURE);
-JUMP_NE(error);
-PUSH(INDD(R0,IMM(1)));//push clousre env
-CALLA(INDD(R0,IMM(2)));
-//applic drop number of args
-MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
-DROP(IMM(STARG(IMM(0))+IMM(2)));
-
-PUSH(R0);
-
-//applic pushing number of args
-PUSH(IMM(2));
-//fvar: *
-MOV(R0,72);
-MOV(R0,INDD(R0,IMM(1)));
-CMP(R0,0);
-JUMP_EQ(error);
-
-CMP(INDD(R0,0),T_CLOSURE);
-JUMP_NE(error);
-PUSH(INDD(R0,IMM(1)));//push clousre env
-CALLA(INDD(R0,IMM(2)));
-//applic drop number of args
-MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
-DROP(IMM(STARG(IMM(0))+IMM(2)));
-
-PUSH(R0);
-
-//applic pushing number of args
-PUSH(IMM(2));
-//fvar: /
-MOV(R0,74);
-MOV(R0,INDD(R0,IMM(1)));
-CMP(R0,0);
-JUMP_EQ(error);
-
-CMP(INDD(R0,0),T_CLOSURE);
-JUMP_NE(error);
-PUSH(INDD(R0,IMM(1)));//push clousre env
-CALLA(INDD(R0,IMM(2)));
-//applic drop number of args
-MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
-DROP(IMM(STARG(IMM(0))+IMM(2)));
-
+MOV(R0,91);
   POP(FP);
 //  print_stack("dd");
 //  print_heap("dd");
