@@ -2,6 +2,7 @@
 
 (define symbols '())
 (define buckets '())
+(define prims '(+ - cons car))
 
 (define const-list
  `((10 ,void-object (937610))
@@ -130,4 +131,11 @@
 	  ((symbol? (cadr (car consts))) (set-car! (cdr (caddr (car consts))) (lookup (cadr (car consts)) buckets)) (update-consts (cdr consts)))
 	  (else (update-consts (cdr consts)))
 	  )))
+	  
+(define add-primitives
+  (lambda (prim-list)
+    (if (null? prim-list)
+	    'finished
+		(begin (add-const (car prim-list) const-list)
+		       (add-primitives (cdr prim-list))))))
 		
