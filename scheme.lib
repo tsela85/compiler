@@ -38,13 +38,9 @@
 #include "lib/scheme/primitives/bin_div.asm"
 #include "lib/scheme/primitives/car.asm"
 #include "lib/scheme/primitives/cdr.asm"
+#include "lib/scheme/primitives/set_car.asm"
+#include "lib/scheme/primitives/set_cdr.asm"
 
-/* car.asm
-*
-*  basic car
-*
-*      Programmer: Tom & Eitan, 2013
-*/
 
 {
  WRITE_SOB_SYMBOL:
