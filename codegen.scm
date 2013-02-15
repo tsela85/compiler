@@ -42,7 +42,8 @@
 
 (define create-code
   (lambda (pe)
-    (find-consts pe)
+        (add-primitives prims)
+		(find-consts pe)
         (create-buckets symbols)
         (if (file-exists? "out.c")
             (delete-file "out.c"))
@@ -89,14 +90,7 @@ void print_heap(){
   #define SOB_NIL 11
   #define SOB_BOOLEAN_FALSE 12
   #define SOB_BOOLEAN_TRUE 14
-  CALL(MAKE_SOB_VOID);
-  CALL(MAKE_SOB_NIL);
-  PUSH(IMM(0));
-  CALL(MAKE_SOB_BOOL);
-  DROP(1);
-  PUSH(IMM(1));
-  CALL(MAKE_SOB_BOOL);
-  DROP(1);
+
   JUMP(CONTINUE);
   #include \"char.lib\"
   #include \"io.lib\"
@@ -116,6 +110,7 @@ void print_heap(){
   "MOV(FP,SP);" nl
   ;"MOV(FP,SP);" nl
   "int i,j;" nl
+  (code-gen-prim '+ "BIN_PLUS") nl
   body nl
 
 "  POP(FP);
@@ -597,3 +592,20 @@ error:
                 (code-gen (car e)) nl
                 "PUSH(R0);" nl
                 (code-gen-applic-helper (cdr e))))))
+				
+(define code-gen-prim 
+  (lambda (prim-name prim-label)
+    (string-append
+	   "PUSH(LABEL(" prim-label "));" nl
+       "PUSH(0);" nl
+	   "CALL(MAKE_SOB_CLOSURE);" nl
+       "DROP(IMM(2));" nl
+	   "MOV(R1," (number->string (lookup prim-name buckets)) ");" nl
+       "MOV(INDD(R1,IMM(1)),R0);" nl
+       "MOV(R0,SOB_VOID);" nl)))
+	   
+	   
+	   
+	
+	
+	

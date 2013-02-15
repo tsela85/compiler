@@ -7,9 +7,9 @@
 int main()
 {
   START_MACHINE;
-  int consts[]={937610, 722689, 741553, 0, 741553, 1, 799345, 1, 120, 368031, 21, 16, 0};
+  int consts[]={937610, 722689, 741553, 0, 741553, 1, 799345, 1, 43, 368031, 49, 799345, 1, 45, 368031, 51, 799345, 4, 99, 111, 110, 115, 368031, 53, 799345, 3, 99, 97, 114, 368031, 55, 945311, 2, 945311, 1, 945311, 9, 945311, 12, 16, 0, 21, 0, 26, 0, 34, 0};
   memcpy(&machine->mem[10],consts,sizeof(consts));
-   MOV(ADDR(0), IMM(23));
+   MOV(ADDR(0), IMM(57));
   void print_stack(char* comment){
         int i;
         printf("printing stack, FP: %d SP: %d %\n", (int)(FP), (int)(SP), comment);
@@ -36,14 +36,7 @@ void print_heap(){
   #define SOB_NIL 11
   #define SOB_BOOLEAN_FALSE 12
   #define SOB_BOOLEAN_TRUE 14
-  CALL(MAKE_SOB_VOID);
-  CALL(MAKE_SOB_NIL);
-  PUSH(IMM(0));
-  CALL(MAKE_SOB_BOOL);
-  DROP(1);
-  PUSH(IMM(1));
-  CALL(MAKE_SOB_BOOL);
-  DROP(1);
+
   JUMP(CONTINUE);
   #include "char.lib"
   #include "io.lib"
@@ -61,58 +54,46 @@ PUSH(0);
 PUSH(FP);
 MOV(FP,SP);
 int i,j;
-//define: x
-//extending the env by 1
-//allocating space for the new env
-PUSH(IMM(1));
-CALL(MALLOC);
-DROP(IMM(1));
-MOV(R2,R0); //R2 <- new env
-//shifting the old enviroment
-MOV(R1,FPARG(IMM(0))); //R1 <- env
-//R2[j] <- R1[i]
-for(i=0,j=1;i<0;++i,++j){
-  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));
-}
-//moving params from the stack to the first list in env
-//allocating space
-PUSH(FPARG(IMM(1)));
-CALL(MALLOC);
-DROP(IMM(1));
-MOV(R3,R0); // R3 <- new env[0]
-for (i=0;i<FPARG(IMM(1));++i) { 
-  MOV(INDD(R3,i),FPARG((IMM(2+i)))); //R3[i] <- param[i]
-}
-MOV(INDD(R2,0),R3); // new env[0] <- R3
-PUSH(LABEL(L_clos_code_146));
-PUSH(R2);
+PUSH(LABEL(BIN_PLUS));
+PUSH(0);
 CALL(MAKE_SOB_CLOSURE);
 DROP(IMM(2));
-JUMP(L_clos_exit_146);
-L_clos_code_146:
-  PUSH(FP);
-  MOV(FP,SP);
-  //lambda-body
-  MOV(R0,FPARG(IMM(2+0)));
-
-  POP(FP);
-  RETURN;
-L_clos_exit_146:
-
-MOV(R1,21);
+MOV(R1,49);
 MOV(INDD(R1,IMM(1)),R0);
 MOV(R0,SOB_VOID);
 
 //applic pushing args to stack
-MOV(R0,12);
+MOV(R0,45);
 PUSH(R0);
-MOV(R0,14);
+MOV(R0,47);
 PUSH(R0);
 
 //applic pushing number of args
 PUSH(IMM(2));
-//fvar: x
-MOV(R0,21);
+//fvar: +
+MOV(R0,49);
+MOV(R0,INDD(R0,IMM(1)));
+CMP(R0,0);
+JUMP_EQ(error);
+
+CMP(INDD(R0,0),T_CLOSURE);
+JUMP_NE(error);
+PUSH(INDD(R0,IMM(1)));//push clousre env
+CALLA(INDD(R0,IMM(2)));
+//applic drop number of args
+MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp 
+DROP(IMM(STARG(IMM(0))+IMM(2)));
+
+//applic pushing args to stack
+MOV(R0,41);
+PUSH(R0);
+MOV(R0,43);
+PUSH(R0);
+
+//applic pushing number of args
+PUSH(IMM(2));
+//fvar: +
+MOV(R0,49);
 MOV(R0,INDD(R0,IMM(1)));
 CMP(R0,0);
 JUMP_EQ(error);
