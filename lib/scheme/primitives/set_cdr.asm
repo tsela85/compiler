@@ -13,7 +13,7 @@ SET_CDR:
         CMP(INDD(FPARG(IMM(2)),IMM(0)),T_PAIR); //arg type is pair
         JUMP_NE(SET_CDR_NOT_A_PAIR);
         MOV(INDD(FPARG(IMM(2)),IMM(2)),FPARG(IMM(3))); //move value to car of
-        MOV(R0,FPARG(IMM(2)));
+        MOV(R0,SOB_VOID);
         POP(FP);
         RETURN;
 SET_CDR_NOT_VALID_ARGUMENTS:

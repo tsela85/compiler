@@ -41,6 +41,14 @@
 #include "lib/scheme/primitives/set_car.asm"
 #include "lib/scheme/primitives/set_cdr.asm"
 #include "lib/scheme/primitives/cons.asm"
+#include "lib/scheme/primitives/is_procedure.asm"
+#include "lib/scheme/primitives/is_vector.asm"
+#include "lib/scheme/primitives/is_symbol.asm"
+#include "lib/scheme/primitives/is_string.asm"
+#include "lib/scheme/primitives/is_char.asm"
+#include "lib/scheme/primitives/is_number.asm"
+#include "lib/scheme/primitives/is_boolean.asm"
+#include "lib/scheme/primitives/reminder.asm"
 
 
 {
