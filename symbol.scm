@@ -138,4 +138,11 @@
 	    'finished
 		(begin (add-const (car prim-list) const-list)
 		       (add-primitives (cdr prim-list))))))
+			   
+(define initialize
+  (lambda ()
+    (set! const-list `((10 ,void-object (937610)) (11 () (722689)) (12 #f (741553 0)) (14 #t (741553 1))))
+	(set! buckets '())
+	(set! symbols '())
+	(set! next-mem 16)))
 		
