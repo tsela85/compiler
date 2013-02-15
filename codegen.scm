@@ -604,6 +604,7 @@ error:
 	   "MOV(R1," (number->string (lookup prim-name buckets)) ");" nl
        "MOV(INDD(R1,IMM(1)),R0);" nl
        "MOV(R0,SOB_VOID);" nl)))
+
 	   
 	   
 	   
