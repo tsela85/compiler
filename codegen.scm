@@ -42,7 +42,8 @@
 
 (define create-code
   (lambda (pe)
-        (add-primitives prims)
+        (initialize)
+		(add-primitives prims)
 		(find-consts pe)
         (create-buckets symbols)
         (if (file-exists? "out.c")
