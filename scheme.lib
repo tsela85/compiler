@@ -30,7 +30,21 @@
 #include "lib/scheme/write_sob_string.asm"
 #include "lib/scheme/write_sob_vector.asm"
 #include "lib/scheme/write_sob.asm"
-#include "lib/scheme/bin_plus.asm"
+
+//Tom & Eitan primitives
+#include "lib/scheme/primitives/bin_plus.asm"
+#include "lib/scheme/primitives/bin_minus.asm"
+#include "lib/scheme/primitives/bin_mul.asm"
+#include "lib/scheme/primitives/bin_div.asm"
+#include "lib/scheme/primitives/car.asm"
+#include "lib/scheme/primitives/cdr.asm"
+
+/* car.asm
+*
+*  basic car
+*
+*      Programmer: Tom & Eitan, 2013
+*/
 
 {
  WRITE_SOB_SYMBOL:
