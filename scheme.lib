@@ -36,8 +36,6 @@
 #include "lib/scheme/primitives/bin_minus.asm"
 #include "lib/scheme/primitives/bin_mul.asm"
 #include "lib/scheme/primitives/bin_div.asm"
-#include "lib/scheme/primitives/car.asm"
-#include "lib/scheme/primitives/cdr.asm"
 
 /* car.asm
 *

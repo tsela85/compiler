@@ -111,7 +111,7 @@ void print_heap(){
   "MOV(FP,SP);" nl
   ;"MOV(FP,SP);" nl
   "int i,j;" nl
-  (code-gen-prim '+ "BIN_PLUS") nl
+  (code-gen-primitives) nl
   body nl
 
 "  POP(FP);
@@ -604,6 +604,15 @@ error:
 	   "MOV(R1," (number->string (lookup prim-name buckets)) ");" nl
        "MOV(INDD(R1,IMM(1)),R0);" nl
        "MOV(R0,SOB_VOID);" nl)))
+	   
+(define code-gen-primitives
+  (lambda ()
+    (string-append
+	  (code-gen-prim '+ "BIN_PLUS") nl
+	  (code-gen-prim '- "BIN_MINUS") nl
+	  (code-gen-prim '/ "BIN_DIV") nl
+	  (code-gen-prim '* "BIN_MUL") nl 
+	  )))
 
 	   
 	   

@@ -2,7 +2,7 @@
 
 (define symbols '())
 (define buckets '())
-(define prims '(+ - cons car))
+(define prims '(+ - * / cons car cdr))
 
 (define const-list
  `((10 ,void-object (937610))
