@@ -35,8 +35,8 @@
           ((tag? 'lambda-variadic pe) (code-gen-lambda-var pe))
           ((tag? 'lambda-opt pe) (code-gen-lambda-opt pe))
 
-;          ((tag? 'tc-applic pe) (tag? 'applic pe))
-;          ((tag? 'tc-applic pe) (code-gen-applic pe))
+;          ((tag? 'tc-applic pe) (code-gen-tc-applic2 pe))
+;          ((tag? 'applic pe) (code-gen-applic pe))
           (else "not implemented")
           )))
 
@@ -89,14 +89,6 @@ void print_heap(){
   #define SOB_NIL 11
   #define SOB_BOOLEAN_FALSE 12
   #define SOB_BOOLEAN_TRUE 14
-  CALL(MAKE_SOB_VOID);
-  CALL(MAKE_SOB_NIL);
-  PUSH(IMM(0));
-  CALL(MAKE_SOB_BOOL);
-  DROP(1);
-  PUSH(IMM(1));
-  CALL(MAKE_SOB_BOOL);
-  DROP(1);
   JUMP(CONTINUE);
   #include \"char.lib\"
   #include \"io.lib\"

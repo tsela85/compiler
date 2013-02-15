@@ -71,3 +71,45 @@
 
 (compile '(begin (define x (lambda (x y) y)) (x #t #f)))
 (compile '(begin (define x (lambda (x y) x)) (x #t #f)))
+
+((lambda (a b . c) a) #t #f #f) ; #t
+((lambda (a b . c) c) #t #f) ; ()
+((lambda ( . c) c)) ; ()
+
+(compile '((
+    (lambda (a b . c)
+      (lambda (d e f . g)
+        c))
+    #t #t ) #f #f #f) ; ()
+  )
+
+(compile '((
+  (lambda (a b . c)
+    (lambda (d e f . g)
+      f))
+  #t #t ) #f #f #f) ; #f
+         )
+
+(compile '((
+  (lambda (a b . c)
+    (lambda (d e f . g)
+      g))
+  #t #t ) #f #f #f)) ;()
+
+(compile '(((
+   (lambda (a b . c)
+     (lambda (d e f . g)
+       (lambda (h i j k . l)
+         c)))
+   #t #t ) #f #f #f) #t #t #t #t) ; ()
+         )
+(compile '(((
+   (lambda (a b . c)
+     (lambda (d e f . g)
+       (lambda (h i j k . l)
+         j
+         )))
+   #f #f) #f #f #f) #f #f #t #f) ; #t
+         )
+
+(compile '2)
