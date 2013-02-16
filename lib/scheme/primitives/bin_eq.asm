@@ -15,11 +15,11 @@ BIN_EQ:
         JUMP_NE(BIN_EQ_NOT_A_INTEGER) ;
         MOV(R0,IMM(SOB_BOOLEAN_TRUE));
         CMP(INDD(FPARG(2),1),INDD(FPARG(3),1));
-        JUMP_EQ(BOOLEAN_IS_A_BOOLEAN);
+        JUMP_EQ(BIN_EQ_IS_A_EQ);
         MOV(R0,IMM(SOB_BOOLEAN_FALSE))        ;
 BIN_EQ_IS_A_EQ:
         POP(FP);
-        RETURN;        RETURN;
+        RETURN;
 BIN_EQ_NOT_VALID_ARGUMENTS:
         SHOW("BIN_EQ -not a valid number of args",FPARG(1)) ;
         STOP_MACHINE ;

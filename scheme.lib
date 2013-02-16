@@ -56,6 +56,7 @@
 #include "lib/scheme/primitives/is_pair.asm"
 #include "lib/scheme/primitives/is_null.asm"
 #include "lib/scheme/primitives/is_eq.asm"
+#include "lib/scheme/primitives/zero.asm"
 
 #include "lib/scheme/primitives/integer_to_char.asm"
 #include "lib/scheme/primitives/char_to_integer.asm"
