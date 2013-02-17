@@ -36,12 +36,16 @@
 #include "lib/scheme/primitives/bin_minus.asm"
 #include "lib/scheme/primitives/bin_mul.asm"
 #include "lib/scheme/primitives/bin_div.asm"
-#include "lib/scheme/primitives/apply.asm"
+#include "lib/scheme/primitives/bin_eq.asm"
+#include "lib/scheme/primitives/bin_gt.asm"
+#include "lib/scheme/primitives/reminder.asm"
+
 #include "lib/scheme/primitives/car.asm"
 #include "lib/scheme/primitives/cdr.asm"
 #include "lib/scheme/primitives/set_car.asm"
 #include "lib/scheme/primitives/set_cdr.asm"
 #include "lib/scheme/primitives/cons.asm"
+
 #include "lib/scheme/primitives/is_procedure.asm"
 #include "lib/scheme/primitives/is_vector.asm"
 #include "lib/scheme/primitives/is_symbol.asm"
@@ -49,7 +53,22 @@
 #include "lib/scheme/primitives/is_char.asm"
 #include "lib/scheme/primitives/is_number.asm"
 #include "lib/scheme/primitives/is_boolean.asm"
-#include "lib/scheme/primitives/reminder.asm"
+#include "lib/scheme/primitives/is_pair.asm"
+#include "lib/scheme/primitives/is_null.asm"
+#include "lib/scheme/primitives/is_eq.asm"
+#include "lib/scheme/primitives/zero.asm"
+
+#include "lib/scheme/primitives/integer_to_char.asm"
+#include "lib/scheme/primitives/char_to_integer.asm"
+
+#include "lib/scheme/primitives/make_string.asm"
+#include "lib/scheme/primitives/make_vector.asm"
+#include "lib/scheme/primitives/string_length.asm"
+#include "lib/scheme/primitives/vector_length.asm"
+#include "lib/scheme/primitives/string_ref.asm"
+#include "lib/scheme/primitives/vector_ref.asm"
+#include "lib/scheme/primitives/string_set.asm"
+#include "lib/scheme/primitives/vector_set.asm"
 
 {
  WRITE_SOB_SYMBOL:
