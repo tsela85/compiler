@@ -43,8 +43,8 @@
 (define create-code
   (lambda (pe)
         (initialize)
-		(add-primitives prims)
-		(find-consts pe)
+                (add-primitives prims)
+                (find-consts pe)
         (create-buckets symbols)
         (if (file-exists? "out.c")
             (delete-file "out.c"))
@@ -161,8 +161,8 @@ error:
          ((boolean? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((number? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((symbol? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
-		  ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
-		  ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+                  ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+                  ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           (else 'error-code-gen-const))))
 
 (define code-gen-boolean
@@ -268,8 +268,8 @@ error:
                          (label-clos-exit (^label-clos-exit))
                   (lambda-code
                   (string-append
-                  "//extending the env by 1" nl
-                  "//allocating space for the new env" nl
+                  "//lambda-s extending the env by 1" nl
+                  "//lambda-s allocating space for the new env" nl
                   "PUSH(IMM("(number->string env-size)"));" nl
                   "CALL(MALLOC);" nl
                   "DROP(IMM(1));" nl
@@ -283,8 +283,8 @@ error:
                   "  MOV(INDD(R2,IMM(j)),INDD(R1,IMM(i)));" nl
                   "}" nl
 
-                  "//moving params from the stack to the first list in env" nl
-                  "//allocating space" nl
+                  "//lambda-s moving params from the stack to the first list in env" nl
+                  "//lambda-s allocating space" nl
                   "PUSH(FPARG(IMM(1)));" nl
                   "CALL(MALLOC);" nl
                   "DROP(IMM(1));" nl
@@ -301,6 +301,7 @@ error:
                   "DROP(IMM(2));" nl
                   "JUMP("label-clos-exit");" nl
                   label-clos":" nl
+                  "printf(\"push(FP):%ld \\n\",FP); //TODO: remove" nl
                   "  PUSH(FP);" nl
                   "  MOV(FP,SP);" nl
                   "  //lambda-body" nl
@@ -510,53 +511,11 @@ error:
                 "PUSH(INDD(R0,IMM(1)));//push clousre env" nl
                 "CALLA(INDD(R0,IMM(2)));" nl
                 "//applic drop number of args" nl
-;                "DROP(IMM("m"+2));" nl ; //TODO: m+2
                 "MOV(R10,IMM(STARG(IMM(0)))) //TODO: TEMP move sp " nl
-;                "printf(\"drop: %d fp: %d\\n\",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );" nl
+;                "printf(\"drop: %ld fp: %ld\\n\",(int)(SP-IMM(STARG(IMM(0))+IMM(2))),(int)FP );" nl
                  "DROP(IMM(STARG(IMM(0))+IMM(2)));" nl
-;                "MOV(SP,FP); //TODO: remove" nl
 
-                ))))))
-
-(define code-gen-tc-applic
-  (lambda (e)
-    (with e
-          (lambda (_ proc ex-list)
-            (let ((label-err (^label-applic-err))
-                  (m (number->string (length ex-list))))
-              (string-append
-               "//tc-applic pushing args to stack" nl
-               (code-gen-applic-helper (reverse ex-list)) nl
-               "//tc-applic pushing number of args" nl
-               "PUSH(IMM("m"));" nl
-;               "PUSH(IMM(FPARG(1)));" nl
-               (code-gen proc) nl
-               "CMP(INDD(R0,0),T_CLOSURE);" nl
-
-               "JUMP_NE(error);" nl
-               "PUSH(INDD(R0,IMM(1)));" nl
-               "//tc-applic changes" nl
-     "printf(\"OLD FP: %d\\n\",FP); printf(\"OLD SP: %d\\n\",SP);" nl
-               "//tc-applic push old ret" nl
-               "PUSH(FPARG(IMM(-1)));" nl
-               ; "MOV(R1,FP)" nl ;current frame fp
-               "MOV(R15,FPARG(-2)) //saving old fp" nl
-               "MOV(R2,FPARG(IMM(1))); //saving old number of n" nl
-               "//copy stack to old stack" nl
-               "for(i=0; i < IMM(STARG(IMM(0)))+3;i++) {" nl
-;               "for(i=0; i < "m"+3;i++) {" nl
-               "  MOV(FPARG(R2 + 1 -i),LOCAL(i));" nl
-               "}" nl
-               "//NOT SURE THAT IT IS TRUE - update sp" nl
-               "//update sp to size of frame" nl
-;               "MOV(SP,R15 + 3 +" m ");" nl
-;               "MOV(SP,R15 + 3 + IMM(FPARG(1)));" nl
-               "MOV(SP,R15 + 3 + IMM(STARG(IMM(0))));" nl
-               "//tc-applic  get old fp to run over the old stack" nl
-               "MOV(FP,R15)" nl
-;  "printf(\"NEW FP: %d\\n \",FP); printf(\"NEW SP: %d\\n\",SP);" nl
-               "JUMPA(INDD(R0,2));"nl
-               ))))))
+                 ))))))
 
 (define code-gen-tc-applic2
   (lambda (e)
@@ -576,6 +535,7 @@ error:
                "//tc-applic changes" nl
                "PUSH(FPARG(IMM(-1))); //pushing to the top of the frame  the ret of the old frame" nl
                "MOV(R1,FPARG(-2)); //R1<-prev frame fp" nl
+               "printf(\"old FP %ld \\n\",R1); //TODO: remove" nl
                "MOV(R2,STARG(1)); //R2<- amount of current args" nl
                "//copy current frame to old frame" nl
                "for(i=0; i < R2 + 3; i++) {" nl
@@ -583,7 +543,7 @@ error:
                "}" nl
                "MOV(FP,R1); //update fp" nl
                "MOV(SP,FP + R2 + 3); //SP<- old fp + args count + 3" nl
-               "JUMPA(INDD(R0,2)); //tc-applic jumpint to cluser code"nl
+               "JUMPA(INDD(R0,2)); //tc-applic jump to closure code"nl
                ))))))
 
 
@@ -595,36 +555,58 @@ error:
                 (code-gen (car e)) nl
                 "PUSH(R0);" nl
                 (code-gen-applic-helper (cdr e))))))
-				
-(define code-gen-prim 
+
+(define code-gen-prim
   (lambda (prim-name prim-label)
     (string-append
-	   "PUSH(LABEL(" prim-label "));" nl
+           "PUSH(LABEL(" prim-label "));" nl
        "PUSH(0);" nl
-	   "CALL(MAKE_SOB_CLOSURE);" nl
+           "CALL(MAKE_SOB_CLOSURE);" nl
        "DROP(IMM(2));" nl
-	   "MOV(R1," (number->string (lookup prim-name buckets)) ");" nl
+           "MOV(R1," (number->string (lookup prim-name buckets)) ");" nl
        "MOV(INDD(R1,IMM(1)),R0);" nl
        "MOV(R0,SOB_VOID);" nl)))
-	   
+
 (define code-gen-primitives
   (lambda ()
     (string-append
-	  (code-gen-prim '+ "BIN_PLUS") nl
-	  (code-gen-prim '- "BIN_MINUS") nl
-	  (code-gen-prim '/ "BIN_DIV") nl
-	  (code-gen-prim '* "BIN_MUL") nl 
-	  (code-gen-prim 'cons "CONS") nl 
-	  (code-gen-prim 'car "CAR") nl 
-	  (code-gen-prim 'cdr "CDR") nl 
-	  (code-gen-prim 'set-car! "SET_CAR") nl 
-	  (code-gen-prim 'set-cdr! "SET_CDR") nl 
-	  (code-gen-prim 'apply "APPLY") nl 
-	  )))
+          (code-gen-prim 'bin+ "BIN_PLUS") nl
+          (code-gen-prim 'bin- "BIN_MINUS") nl
+          (code-gen-prim 'bin/ "BIN_DIV") nl
+          (code-gen-prim 'bin* "BIN_MUL") nl
+           (code-gen-prim 'bin=? "BIN_EQ") nl
+           (code-gen-prim 'bin<? "BIN_GT") nl
+           (code-gen-prim 'reminder "REMINDER") nl
 
-	   
-	   
-	   
-	
-	
-	
+          (code-gen-prim 'cons "CONS") nl
+          (code-gen-prim 'car "CAR") nl
+          (code-gen-prim 'cdr "CDR") nl
+          (code-gen-prim 'set-car! "SET_CAR") nl
+          (code-gen-prim 'set-cdr! "SET_CDR") nl
+
+          (code-gen-prim 'procedure? "IS_PROCEDURE") nl
+          (code-gen-prim 'vector? "IS_VECTOR") nl
+          (code-gen-prim 'symbol? "IS_SYMBOL") nl
+          (code-gen-prim 'string? "IS_STRING") nl
+          (code-gen-prim 'char? "IS_CHAR") nl
+          (code-gen-prim 'number? "IS_NUMBER") nl
+          (code-gen-prim 'boolean? "IS_BOOLEAN") nl
+          (code-gen-prim 'pair? "IS_PAIR") nl
+          (code-gen-prim 'null? "IS_NULL") nl
+          (code-gen-prim 'eq? "IS_EQ") nl
+          (code-gen-prim 'zero? "ZERO") nl
+
+          (code-gen-prim 'integer->char "INTEGER_TO_CHAR") nl
+          (code-gen-prim 'char->integer "CHAR_TO_INTEGER") nl
+
+          (code-gen-prim 'make-string "MAKE_STRING") nl
+          (code-gen-prim 'make-vector "MAKE_VECTOR") nl
+          (code-gen-prim 'string-length "STRING_LENGTH") nl
+          (code-gen-prim 'vector-length "VECTOR_LENGTH") nl
+          (code-gen-prim 'string-ref "STRING_REF") nl
+          (code-gen-prim 'vector-ref "VECTOR_REF") nl
+          (code-gen-prim 'string-set! "STRING_SET") nl
+          (code-gen-prim 'vector-set! "VECTOR_SET") nl
+
+;          (code-gen-prim 'apply "APPLY") nl
+          )))

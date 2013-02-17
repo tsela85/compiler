@@ -752,59 +752,59 @@
 
 (define annotate-tc
   (letrec ((divide-tc
-                        (lambda (pe new-tc?)
-                                `(,@(map (lambda (x)
-                                                        (run x #f))
-                                        (list-head (cadr pe) (- (length (cadr pe)) 1))) ,(run (car (reverse (cadr pe))) new-tc?))))
+            (lambda (pe new-tc?)
+              `(,@(map (lambda (x)
+                         (run x #f))
+                       (list-head (cadr pe) (- (length (cadr pe)) 1))) ,(run (car (reverse (cadr pe))) new-tc?))))
 
-                        (all-but-last
-                        (lambda (pe func tc?)
-                                (if (null? (cdr pe))
-                                (func (car pe) tc?)
-                                (cons (func (car pe) #f) (all-but-last (cdr pe) func tc?)))))
-                (run
-          (lambda (pe tc?)
-            (cond ((tag? 'const pe) pe)
-                  ((tag? 'fvar pe) pe)
-                  ((tag? 'pvar pe) pe)
-                  ((tag? 'bvar pe) pe)
-                                  ((tag? 'if-3 pe)
-                   (with pe
-                         (lambda (_ test dit dif)
-                           `(if-3 ,(run test #f)
-                                  ,(run dit tc?)
-                                  ,(run dif tc?)))))
-                  ((tag? 'lambda-simple pe)
-                   (with pe
-                         (lambda (tag param body)
-                         `(,tag ,param ,(run body #t)))))
-                  ((tag? 'lambda-opt pe)
-                   (with pe
-                         (lambda (tag param opt body)
-                           `(,tag ,param ,opt ,(run body #t)))))
-                  ((tag? 'lambda-variadic pe)
-                 (with pe
-                       (lambda (tag param body)
-                         `(,tag ,param ,(run body #t)))))
-                  ((tag? 'define pe)
-                   (with pe
-                         (lambda (tag var dpe)
-                           `(,tag ,var ,(run dpe #f)))))
-                  ((tag? 'applic pe)
-                 (if (eq? tc? #f)
+           (all-but-last
+            (lambda (pe func tc?)
+              (if (null? (cdr pe))
+                  (func (car pe) tc?)
+                  (cons (func (car pe) #f) (all-but-last (cdr pe) func tc?)))))
+           (run
+            (lambda (pe tc?)
+              (cond ((tag? 'const pe) pe)
+                    ((tag? 'fvar pe) pe)
+                    ((tag? 'pvar pe) pe)
+                    ((tag? 'bvar pe) pe)
+                    ((tag? 'if-3 pe)
                      (with pe
-                           (lambda (_ proc expList)
-                             `(applic ,(run proc #f)
-                                      ,(map (lambda (exp)
-                                              (run exp #f)) expList))))
+                           (lambda (_ test dit dif)
+                             `(if-3 ,(run test #f)
+                                    ,(run dit tc?)
+                                    ,(run dif tc?)))))
+                    ((tag? 'lambda-simple pe)
                      (with pe
-                           (lambda (_ proc expList)
-                             `(tc-applic ,(run proc #f)
-                                         ,(map (lambda (exp)
-                                                 (run exp #f)) expList))))))
-                  ((tag? 'seq pe)  `(seq ,(divide-tc pe tc?)))
-                  ((tag? 'or pe) `(or ,(divide-tc pe tc?)))
-                  (else (error 'annotate-tc (format "~s is not legal parsed expression" pe)))))))
+                           (lambda (tag param body)
+                             `(,tag ,param ,(run body #t)))))
+                    ((tag? 'lambda-opt pe)
+                     (with pe
+                           (lambda (tag param opt body)
+                             `(,tag ,param ,opt ,(run body #t)))))
+                    ((tag? 'lambda-variadic pe)
+                     (with pe
+                           (lambda (tag param body)
+                             `(,tag ,param ,(run body #t)))))
+                    ((tag? 'define pe)
+                     (with pe
+                           (lambda (tag var dpe)
+                             `(,tag ,var ,(run dpe #f)))))
+                    ((tag? 'applic pe)
+                     (if (eq? tc? #f)
+                         (with pe
+                               (lambda (_ proc expList)
+                                 `(applic ,(run proc #f)
+                                          ,(map (lambda (exp)
+                                                  (run exp #f)) expList))))
+                         (with pe
+                               (lambda (_ proc expList)
+                                 `(tc-applic ,(run proc #f)
+                                             ,(map (lambda (exp)
+                                                     (run exp #f)) expList))))))
+                    ((tag? 'seq pe)  `(seq ,(divide-tc pe tc?)))
+                    ((tag? 'or pe) `(or ,(divide-tc pe tc?)))
+                    (else (error 'annotate-tc (format "~s is not legal parsed expression" pe)))))))
     (lambda (pe)
       (run pe #f)))) ;we changed it to #f on 12.2.13
 
