@@ -112,4 +112,47 @@
    #f #f) #f #f #f) #f #f #t #f) ; #t
          )
 
-(compile '2)
+(compile '(boolean? (zero? (bin* 8 (bin+ 1 2)))))
+
+(compile '(;;; the following should be re-implemented in cisc assembly:
+
+;;; rename ++ to +
+
+           (define ++
+             (letrec ((loop
+                       (lambda (s)
+                         (if (null? s)
+                             0
+                           (bin+ (car s)
+                                 (loop (cdr s)))))))
+               (lambda s (loop s))))
+
+;;; rename ** to *
+
+           (define **
+             (letrec ((loop
+                       (lambda (s)
+                         (if (null? s)
+                             1
+                           (bin* (car s)
+                                 (loop (cdr s)))))))
+               (lambda s (loop s))))
+
+;;; rename -- to -
+
+           (define --
+             (lambda (a . s)
+               (if (null? s)
+                   (bin- 0 a)
+                 (bin- a (apply ++ s)))))
+
+;;; rename // to /
+
+           (define //
+             (lambda (a . s)
+               (if (null? s)
+                   (bin/ 1 a)
+                 (bin/ a (apply ** s)))))
+
+;;;
+))

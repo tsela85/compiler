@@ -14,7 +14,8 @@
 (define ^label-or-exit (^^label "L_or_exit_"))
 (define ^label-clos-code (^^label "L_clos_code_"))
 (define ^label-clos-exit (^^label "L_clos_exit_"))
-(define ^label-clos-loop (^^label "L_clos_loop_"))
+(define ^label-clos-nil (^^label "L_clos_nil_"))
+(define ^label-clos-body (^^label "L_clos_body_"))
 (define ^label-applic-err (^^label "L_applic_err_"))
 
 (define nl (list->string (list #\newline)))

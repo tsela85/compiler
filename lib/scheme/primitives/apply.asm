@@ -1,10 +1,10 @@
-/* bin_minus.asm
+/* apply.asm
 *
 *  basic -
  *
  *      Programmer: Tom & Eitan, 2013
  */
- 
+
 APPLY:
         PUSH(FP);
         MOV(FP, SP);
@@ -25,7 +25,6 @@ APPLY_NOT_VALID_ARGUMENTS:
         STOP_MACHINE ;
         return 1;
 APPLY_INVALID_ARG:
-		SHOW("APPLY - invalid args",FPARG(1)) ;
+                SHOW("APPLY - invalid args",FPARG(1)) ;
         STOP_MACHINE ;
         return 1;
-
