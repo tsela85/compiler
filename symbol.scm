@@ -9,7 +9,7 @@
                integer->char char->integer
                make-string make-vector
                string-length string-ref string-set!
-               vector-length vector-ref vector-set!                                   apply))
+               vector-length vector-ref vector-set! apply))
 
 (define const-list
  `((10 ,void-object (937610))

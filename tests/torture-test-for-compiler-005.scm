@@ -156,3 +156,7 @@
 
 ;;;
 ))
+
+
+(compile '(apply bin+ '(1 2 3)))
+(test '(apply bin+ (1 2 3)))

@@ -54,10 +54,11 @@
                (body (code-gen pe))
 
                (code (string-append
-"#include <stdio.h>
+"#define  DO_SHOW 1
+#include <stdio.h>
 #include <stdlib.h>
 #include \"cisc.h\"
-#define SHOW(msg, x) { printf(\"%s %s = %ld\\n\", (msg), (#x), (x)); }
+//#define SHOW(msg, x) { printf(\"%s %s = %ld\\n\", (msg), (#x), (x)); }
 
 
 int main()
@@ -502,6 +503,7 @@ error:
             (let ((label-err (^label-applic-err))
                       (m (number->string (length ex-list))))
               (string-append
+               "//APPLIC start" nl
                 "//applic pushing args to stack" nl
             (code-gen-applic-helper (reverse ex-list)) nl
                 "//applic pushing number of args" nl
@@ -609,5 +611,5 @@ error:
           (code-gen-prim 'string-set! "STRING_SET") nl
           (code-gen-prim 'vector-set! "VECTOR_SET") nl
 
-;          (code-gen-prim 'apply "APPLY") nl
+          (code-gen-prim 'apply "APPLY") nl
           )))

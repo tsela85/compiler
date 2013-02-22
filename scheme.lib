@@ -70,6 +70,8 @@
 #include "lib/scheme/primitives/string_set.asm"
 #include "lib/scheme/primitives/vector_set.asm"
 
+#include "lib/scheme/primitives/apply.asm"
+
 {
  WRITE_SOB_SYMBOL:
   RETURN;
