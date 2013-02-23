@@ -103,11 +103,13 @@ void print_heap(){
   #include \"scheme.lib\"
 
   CONTINUE:" nl
+
   "PUSH(0);" nl
   "PUSH(0);" nl
   "PUSH(0);" nl
   "PUSH(FP);" nl
   "MOV(FP,SP);" nl
+  "char* fvar;" nl
   "int i,j;" nl
   (code-gen-primitives) nl
   body nl
@@ -124,6 +126,7 @@ void print_heap(){
   return 0;
 error_no_val:
   printf(\"ERROR - FVAR HAS NO VALUE\\n\");
+  printf(\"fvar = %s\\n\",fvar);
   STOP_MACHINE;
   return 1;
 error:
@@ -163,8 +166,10 @@ error:
          ((boolean? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((number? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((symbol? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
-                  ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
-                  ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+          ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+          ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+		  ((char? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+		  ((null? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           (else 'error-code-gen-const))))
 
 (define code-gen-boolean
@@ -235,10 +240,10 @@ error:
              (let ((buck-addr (lookup sym buckets)))
             (string-append
                 "//fvar: "(symbol->string sym) nl
+				"fvar = \""  (symbol->string sym) "\";" nl
                 "MOV(R0," (number->string buck-addr) ");" nl
                 "MOV(R0,INDD(R0,IMM(1)));" nl
                 "CMP(R0,0);" nl
-;                "printf(\"//fvar: "(symbol->string sym) "\\n\");"nl
                 "JUMP_EQ(error_no_val);" nl
 
                 ))))))
@@ -602,8 +607,8 @@ error:
 
           (code-gen-prim 'integer->char "INTEGER_TO_CHAR") nl
           (code-gen-prim 'char->integer "CHAR_TO_INTEGER") nl
-                  (code-gen-prim 'symbol->string "SYMBOL_TO_STRING") nl
-                  (code-gen-prim 'string->symbol "STRING_TO_SYMBOL") nl
+		  (code-gen-prim 'symbol->string "SYMBOL_TO_STRING") nl
+		  (code-gen-prim 'string->symbol "STRING_TO_SYMBOL") nl
 
           (code-gen-prim 'make-string "MAKE_STRING") nl
           (code-gen-prim 'make-vector "MAKE_VECTOR") nl
