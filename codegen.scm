@@ -58,7 +58,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include \"cisc.h\"
-//#define SHOW(msg, x) { printf(\"%s %s = %ld\\n\", (msg), (#x), (x)); }
+
 
 
 int main()
@@ -103,15 +103,11 @@ void print_heap(){
   #include \"scheme.lib\"
 
   CONTINUE:" nl
-  "PUSH(IMM(4));" nl
-  "PUSH(IMM(5));" nl
-  "PUSH(IMM(2));" nl
   "PUSH(0);" nl
   "PUSH(0);" nl
-  ;"PUSH(0);" nl
+  "PUSH(0);" nl
   "PUSH(FP);" nl
   "MOV(FP,SP);" nl
-  ;"MOV(FP,SP);" nl
   "int i,j;" nl
   (code-gen-primitives) nl
   body nl
@@ -242,6 +238,7 @@ error:
                 "MOV(R0," (number->string buck-addr) ");" nl
                 "MOV(R0,INDD(R0,IMM(1)));" nl
                 "CMP(R0,0);" nl
+;                "printf(\"//fvar: "(symbol->string sym) "\\n\");"nl
                 "JUMP_EQ(error_no_val);" nl
 
                 ))))))
@@ -307,7 +304,7 @@ error:
                   "DROP(IMM(2));" nl
                   "JUMP("label-clos-exit");" nl
                   label-clos":" nl
-                  "printf(\"push(FP):%ld \\n\",FP); //TODO: remove" nl
+;                  "printf(\"push(FP):%ld \\n\",FP); //TODO: remove" nl
                   "  PUSH(FP);" nl
                   "  MOV(FP,SP);" nl
                   "  //lambda-body" nl
@@ -605,8 +602,8 @@ error:
 
           (code-gen-prim 'integer->char "INTEGER_TO_CHAR") nl
           (code-gen-prim 'char->integer "CHAR_TO_INTEGER") nl
-		  (code-gen-prim 'symbol->string "SYMBOL_TO_STRING") nl
-		  (code-gen-prim 'string->symbol "STRING_TO_SYMBOL") nl
+                  (code-gen-prim 'symbol->string "SYMBOL_TO_STRING") nl
+                  (code-gen-prim 'string->symbol "STRING_TO_SYMBOL") nl
 
           (code-gen-prim 'make-string "MAKE_STRING") nl
           (code-gen-prim 'make-vector "MAKE_VECTOR") nl

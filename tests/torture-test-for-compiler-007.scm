@@ -3,7 +3,7 @@
 ;;;
 ;;; Programmer: Mayer Goldberg, 2010
 
-(and (if (if (if (if #f #f #f)
+(compile '(and (if (if (if (if #f #f #f)
                  (if #t (if #t #f #t) (if #t (if #f #t #t) (if #f #f #t)))
                  (if #t #f #f))
              (if (if #t #f (if #t #t #t)) (if #t (if #t #t #f) #f) #f)
@@ -4780,6 +4780,4 @@
                  #t)
              (if (if #t #t #t) (if #t #t #f) (if #t #t #f))
              (if #f (if #t #t #f) (if #t #t #t)))
-         #t))
-
-
+         #t)))
