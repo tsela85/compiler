@@ -169,8 +169,10 @@ error:
          ((boolean? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((number? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((symbol? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
-                  ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
-                  ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+          ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+          ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+		  ((char? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+		  ((null? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           (else 'error-code-gen-const))))
 
 (define code-gen-boolean
