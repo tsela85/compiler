@@ -112,6 +112,7 @@ void print_heap(){
   "PUSH(FP);" nl
   "MOV(FP,SP);" nl
   ;"MOV(FP,SP);" nl
+  "char* fvar;" nl
   "int i,j;" nl
   (code-gen-primitives) nl
   body nl
@@ -128,6 +129,7 @@ void print_heap(){
   return 0;
 error_no_val:
   printf(\"ERROR - FVAR HAS NO VALUE\\n\");
+  printf(\"fvar = %s\\n\",fvar);
   STOP_MACHINE;
   return 1;
 error:
@@ -239,6 +241,7 @@ error:
              (let ((buck-addr (lookup sym buckets)))
             (string-append
                 "//fvar: "(symbol->string sym) nl
+				"fvar = \""  (symbol->string sym) "\";" nl
                 "MOV(R0," (number->string buck-addr) ");" nl
                 "MOV(R0,INDD(R0,IMM(1)));" nl
                 "CMP(R0,0);" nl
