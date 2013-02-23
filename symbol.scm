@@ -6,7 +6,7 @@
                cons car cdr set-car! set-cdr!
                procedure? vector? symbol? string? char?
                number? boolean? pair? null? eq? zero?
-               integer->char char->integer
+               integer->char char->integer symbol->string string->symbol
                make-string make-vector
                string-length string-ref string-set!
                vector-length vector-ref vector-set! apply))

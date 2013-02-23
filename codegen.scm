@@ -126,8 +126,12 @@ void print_heap(){
   STOP_MACHINE;
 
   return 0;
+error_no_val:
+  printf(\"ERROR - FVAR HAS NO VALUE\\n\");
+  STOP_MACHINE;
+  return 1;
 error:
-  printf(\"ERROR\\n\");
+  printf(\"ERROR - NOT A CLOSURE\\n\");
   STOP_MACHINE;
   return 1;}"))
                    )
@@ -238,7 +242,7 @@ error:
                 "MOV(R0," (number->string buck-addr) ");" nl
                 "MOV(R0,INDD(R0,IMM(1)));" nl
                 "CMP(R0,0);" nl
-                "JUMP_EQ(error);" nl
+                "JUMP_EQ(error_no_val);" nl
 
                 ))))))
 
@@ -601,6 +605,8 @@ error:
 
           (code-gen-prim 'integer->char "INTEGER_TO_CHAR") nl
           (code-gen-prim 'char->integer "CHAR_TO_INTEGER") nl
+		  (code-gen-prim 'symbol->string "SYMBOL_TO_STRING") nl
+		  (code-gen-prim 'string->symbol "STRING_TO_SYMBOL") nl
 
           (code-gen-prim 'make-string "MAKE_STRING") nl
           (code-gen-prim 'make-vector "MAKE_VECTOR") nl

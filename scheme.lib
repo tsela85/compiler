@@ -30,6 +30,8 @@
 #include "lib/scheme/write_sob_string.asm"
 #include "lib/scheme/write_sob_vector.asm"
 #include "lib/scheme/write_sob.asm"
+#include "lib/scheme/make_sob_symbol.asm"
+#include "lib/scheme/write_sob_symbol.asm"
 
 //Tom & Eitan primitives
 #include "lib/scheme/primitives/bin_plus.asm"
@@ -60,6 +62,8 @@
 
 #include "lib/scheme/primitives/integer_to_char.asm"
 #include "lib/scheme/primitives/char_to_integer.asm"
+#include "lib/scheme/primitives/symbol_to_string.asm"
+#include "lib/scheme/primitives/string_to_symbol.asm"
 
 #include "lib/scheme/primitives/make_string.asm"
 #include "lib/scheme/primitives/make_vector.asm"
@@ -72,7 +76,3 @@
 
 #include "lib/scheme/primitives/apply.asm"
 
-{
- WRITE_SOB_SYMBOL:
-  RETURN;
-}
