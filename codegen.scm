@@ -168,8 +168,8 @@ error:
           ((symbol? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
-		  ((char? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
-		  ((null? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+                  ((char? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+                  ((null? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           (else 'error-code-gen-const))))
 
 (define code-gen-boolean
@@ -240,7 +240,7 @@ error:
              (let ((buck-addr (lookup sym buckets)))
             (string-append
                 "//fvar: "(symbol->string sym) nl
-				"fvar = \""  (symbol->string sym) "\";" nl
+                                "fvar = \""  (symbol->string sym) "\";" nl
                 "MOV(R0," (number->string buck-addr) ");" nl
                 "MOV(R0,INDD(R0,IMM(1)));" nl
                 "CMP(R0,0);" nl
@@ -257,10 +257,9 @@ error:
             (string-append
                 "//define: "(symbol->string sym) nl
                 (code-gen val) nl
-                "MOV(R1," (number->string buck-addr) ");" nl
-                "MOV(INDD(R1,IMM(1)),R0);" nl
+                "MOV(INDD(" (number->string buck-addr) ",IMM(1)),R0);" nl
                 "MOV(R0,SOB_VOID);" nl
-
+                "printf(\"define: "(symbol->string sym) "\\n\");" nl
                 ))))))
 
 
@@ -607,8 +606,8 @@ error:
 
           (code-gen-prim 'integer->char "INTEGER_TO_CHAR") nl
           (code-gen-prim 'char->integer "CHAR_TO_INTEGER") nl
-		  (code-gen-prim 'symbol->string "SYMBOL_TO_STRING") nl
-		  (code-gen-prim 'string->symbol "STRING_TO_SYMBOL") nl
+                  (code-gen-prim 'symbol->string "SYMBOL_TO_STRING") nl
+                  (code-gen-prim 'string->symbol "STRING_TO_SYMBOL") nl
 
           (code-gen-prim 'make-string "MAKE_STRING") nl
           (code-gen-prim 'make-vector "MAKE_VECTOR") nl
