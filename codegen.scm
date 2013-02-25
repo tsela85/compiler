@@ -171,6 +171,7 @@ error:
           ((symbol? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+		  ((vector? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
 		  ((char? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
 		  ((null? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           (else 'error-code-gen-const))))

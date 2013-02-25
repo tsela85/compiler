@@ -17,7 +17,7 @@ VECTOR_REF:
         MOV(R0,	INDD(FPARG(IMM(3)),IMM(1))) ; //get the ref
         CMP(R0,	INDD(FPARG(IMM(2)),IMM(1))) ;
         JUMP_GT	(VECTOR_REF_TOO_BIG); //ref bigger then vector length
-        MOV(R0,INDD(FPARG(IMM(2)),R0));
+        MOV(R0,INDD(FPARG(IMM(2)),R0+2));
         POP(FP);
         RETURN;
 VECTOR_REF_NOT_VALID_ARGUMENTS:
