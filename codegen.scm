@@ -170,6 +170,7 @@ error:
           ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((char? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((null? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+		  ((eq? (cadr e) void-object) (string-append "MOV(R0,SOB_VOID);"))
           (else 'error-code-gen-const))))
 
 (define code-gen-boolean

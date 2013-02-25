@@ -353,8 +353,6 @@
         #f ; should have generated an error message!
         )))
 
-(apply + '(1 2 3 4 5))
-))
 (define equal?
   (let ((void-object (if #f #f)))
     (letrec ((equal?
@@ -453,6 +451,8 @@
   (let ((binary-max (lambda (a b) (if (> a b) a b))))
     (lambda (a . s)
       (foldr binary-max a s))))
+	  
+	  
 
 (define min
   (let ((binary-min (lambda (a b) (if (< a b) a b))))
@@ -463,4 +463,6 @@
    (letrec ((number->list (lambda (number)
                 (if (< number 10) (list number)
                 (append (number->list (/ (- number (remainder number 10)) 10)) (list (remainder number 10)))))))
-            (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))))
+            (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))
+			
+(apply + '(1 2 3 4))))
