@@ -353,8 +353,8 @@
         #f ; should have generated an error message!
         )))
 
-
-
+(apply + '(1 2 3 4 5))
+))
 (define equal?
   (let ((void-object (if #f #f)))
     (letrec ((equal?
