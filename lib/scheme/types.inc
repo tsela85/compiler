@@ -7,7 +7,7 @@
 #define T_VOID 		937610
 #define T_NIL 		722689
 #define T_BOOL 		741553
-#define T_CHAR 		181048
+#define T_CHAR 		181048  
 #define T_INTEGER 	945311
 #define T_STRING 	799345
 #define T_SYMBOL 	368031

@@ -14,12 +14,12 @@ STRING_SET:
         JUMP_NE(STRING_SET_NOT_A_STRING);
         CMP(INDD(FPARG(3),0),T_INTEGER); //checks arg 2 is integer
         JUMP_NE(STRING_SET_NOT_A_STRING);
-        CMP(INDD(FPARG(4),0),T_CHAR); //checks arg 2 is integer
+        CMP(INDD(FPARG(4),0),T_CHAR); //checks arg 3 is char
         JUMP_NE(STRING_SET_NOT_A_STRING);
         MOV(R0,	INDD(FPARG(IMM(3)),IMM(1))) ; //get the set
         CMP(R0,	INDD(FPARG(IMM(2)),IMM(1))) ;
         JUMP_GT	(STRING_SET_TOO_BIG); //set bigger then string length
-        MOV(INDD(FPARG(IMM(2)),R0+2),FPARG(4));
+        MOV(INDD(FPARG(IMM(2)),R0+2),INDD(FPARG(4),1));
         MOV(R0,SOB_VOID)                    ;
         POP(FP);
         RETURN;
