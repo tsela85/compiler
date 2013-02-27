@@ -44,6 +44,7 @@
           ((number? pe) (add-const-num pe consts))
 		  ((char? pe) (add-const-char pe consts))
           ((string? pe) (add-const-string pe consts))
+		  ((vector? pe) (add-const-vector pe consts))
           (else 'error)
           )))
           ))
@@ -66,6 +67,14 @@
         (set! const-list (append const-list (list (list next-mem pe (cons 799345 (cons (length chars) chars))))))
         (set! next-mem (+ next-mem 2 (length chars)))
         str-addr)))
+		
+(define add-const-vector
+  (lambda (pe consts)
+    (let ((vec-items (map (lambda(x) (add-const x consts)) (vector->list pe)))
+          (vec-addr next-mem))
+          (set! const-list (append const-list (list (list next-mem pe (cons 335728 (cons (length vec-items) vec-items))))))
+          (set! next-mem (+ next-mem 2 (length vec-items)))
+          vec-addr)))
 
 (define add-const-sym
   (lambda (pe consts)

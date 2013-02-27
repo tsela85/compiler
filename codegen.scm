@@ -103,7 +103,6 @@ void print_heap(){
   #include \"scheme.lib\"
 
   CONTINUE:" nl
-
   "PUSH(0);" nl
   "PUSH(0);" nl
   "PUSH(0);" nl
@@ -168,6 +167,7 @@ error:
           ((symbol? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((pair? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((string? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+          ((vector? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((char? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((null? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           (else 'error-code-gen-const))))
@@ -257,7 +257,8 @@ error:
             (string-append
                 "//define: "(symbol->string sym) nl
                 (code-gen val) nl
-                "MOV(INDD(" (number->string buck-addr) ",IMM(1)),R0);" nl
+                "MOV(R1," (number->string buck-addr) ");" nl
+                "MOV(INDD(R1,IMM(1)),R0);" nl
                 "MOV(R0,SOB_VOID);" nl
                 "printf(\"define: "(symbol->string sym) "\\n\");" nl
                 ))))))

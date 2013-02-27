@@ -9,7 +9,7 @@ IS_NULL:
         CMP(FPARG(1),IMM(1))     ; //checks num of args = 1
         JUMP_NE(NULL_NOT_VALID_ARGUMENTS);
         MOV(R0,IMM(SOB_BOOLEAN_TRUE))        ;
-        CMP(FPARG(2),SOB_NIL); //checks arg 1 is null TODO: INDD
+        CMP(FPARG(2),SOB_NIL); //checks arg 1 is null
         JUMP_EQ(NULL_IS_A_NULL);
         MOV(R0,IMM(SOB_BOOLEAN_FALSE))        ;
 NULL_IS_A_NULL:
