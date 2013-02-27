@@ -1,8 +1,8 @@
 /* scheme/write_sob_bool.asm
- * Take a pointer to a Scheme Boolean object, and 
+ * Take a pointer to a Scheme Boolean object, and
  * prints (to stdout) the character representation
  * of that object.
- * 
+ *
  * Programmer: Mayer Goldberg, 2010
  */
 
@@ -25,7 +25,7 @@
   PUSH(IMM('f'));
   CALL(PUTCHAR);
   DROP(2);
- L_WRITE_SOB_BOOL_EXIT:
+L_WRITE_SOB_BOOL_EXIT:
+  CALL(NEWLINE);
   POP(FP);
   RETURN;
-

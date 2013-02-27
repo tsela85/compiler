@@ -196,7 +196,11 @@ error:
   (lambda (e)
     (if (null? e)
             ""
-                (string-append (code-gen (car e)) nl (code-gen-seq-helper (cdr e))))))
+            (string-append (code-gen (car e)) nl
+                           "PUSH(R0);" nl
+                           "CALL(WRITE_SOB_NO_VOID);" nl
+                           "DROP(IMM(1));" nl
+                           (code-gen-seq-helper (cdr e))))))
 
 (define code-gen-or
   (lambda (e)
@@ -261,7 +265,7 @@ error:
                 "MOV(R1," (number->string buck-addr) ");" nl
                 "MOV(INDD(R1,IMM(1)),R0);" nl
                 "MOV(R0,SOB_VOID);" nl
-                "printf(\"define: "(symbol->string sym) "\\n\");" nl
+;                "printf(\"define: "(symbol->string sym) "\\n\");" nl
                 ))))))
 
 
@@ -590,7 +594,7 @@ error:
           (code-gen-prim 'bin* "BIN_MUL") nl
            (code-gen-prim 'bin=? "BIN_EQ") nl
            (code-gen-prim 'bin<? "BIN_GT") nl
-           (code-gen-prim 'reminder "REMINDER") nl
+           (code-gen-prim 'remainder "REMINDER") nl
 
           (code-gen-prim 'cons "CONS") nl
           (code-gen-prim 'car "CAR") nl

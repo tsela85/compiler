@@ -14,7 +14,7 @@ BIN_GT:
         CMP(INDD(FPARG(3),0),T_INTEGER); //checks arg 2 is integer
         JUMP_NE(BIN_GT_NOT_A_INTEGER) ;
         MOV(R0,IMM(SOB_BOOLEAN_TRUE));
-        CMP(INDD(FPARG(2),1),INDD(FPARG(3),1));
+        CMP(INDD(FPARG(3),1),INDD(FPARG(2),1));
         JUMP_GT(BOOLEAN_IS_A_BOOLEAN);
         MOV(R0,IMM(SOB_BOOLEAN_FALSE))        ;
 BIN_GT_IS_A_GT:

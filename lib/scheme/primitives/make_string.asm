@@ -10,7 +10,7 @@ MAKE_STRING:
         MOV(FP, SP);
         CMP(FPARG(1),IMM(1))     ; //checks num of args = 1
         JUMP_NE(MAKE_STRING_NOT_VALID_ARGUMENTS);
-        CMP(INDD(FPARG(IMM(2)),IMM(0)),T_INTEGER); //arg type is pair
+        CMP(INDD(FPARG(IMM(2)),IMM(0)),T_INTEGER); //arg type is integer
         JUMP_NE(MAKE_STRING_NOT_A_INTEGER);
         MOV(R0,INDD(FPARG(2),IMM(1)));
 MAKE_STRING_LOOP:

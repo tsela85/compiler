@@ -34,6 +34,8 @@
 #include "lib/scheme/write_sob_symbol.asm"
 
 //Tom & Eitan primitives
+#include "lib/scheme/write_sob_no_void.asm"
+
 #include "lib/scheme/primitives/bin_plus.asm"
 #include "lib/scheme/primitives/bin_minus.asm"
 #include "lib/scheme/primitives/bin_mul.asm"
