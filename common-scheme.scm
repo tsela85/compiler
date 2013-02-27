@@ -59,8 +59,6 @@
                                ms))))
                 fs)))
       (apply (car ms) ms))))
-(null? 2)
-
 
 (define +
   (letrec ((loop
@@ -353,7 +351,6 @@
         #f ; should have generated an error message!
         )))
 
-(apply + '(1 2 3 4 5))
 
 (define equal?
   (let ((void-object (if #f #f)))
@@ -385,7 +382,7 @@
                  ((eq? a void-object) (eq? b void-object))
                  (else #f)))))
       equal?)))
-))
+
 (define ^associate
   (lambda (equal?)
     (letrec ((run
@@ -463,4 +460,13 @@
    (letrec ((number->list (lambda (number)
                 (if (< number 10) (list number)
                 (append (number->list (/ (- number (remainder number 10)) 10)) (list (remainder number 10)))))))
-            (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))))
+     (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))
+
+
+((lambda (x) (x x 1000000))
+            (lambda (x n)
+              (if (zero? n)
+                  #t
+                  (x x (- n 1)))))
+
+))

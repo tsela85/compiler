@@ -44,11 +44,12 @@ APPLAY_END_REVERSE:
         MOV(R2,FPARG(IMM(2)))   ;
         PUSH(INDD(R2,IMM(1)))   ; //pushing the env
         CALLA(INDD(R2,IMM(2)))   ;
+//        MOV(R1,SP)              ;
+//        SUB(R1,FP)              ;
+//        SUB(R1,IMM(3))          ; //R1<-amount of args
+//        DROP(R1)                ;
+        DROP(STARG(0))          ;
         DROP(IMM(2))            ;
-        MOV(R1,SP)              ;
-        SUB(R1,FP)              ;
-        SUB(R1,IMM(3))          ; //R1<-amount of args
-        DROP(R1)                ;
         POP(R3)                 ;
         POP(R2)                 ;
         POP(R1)                 ;

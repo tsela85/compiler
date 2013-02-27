@@ -160,3 +160,10 @@
 
 (compile '(apply bin+ '(1 2 3)))
 (test '(apply bin+ (1 2 3)))
+
+(compile '((lambda (a b c d) (bin+ a b))
+           ((lambda () (bin+ 1 2)))
+           ((lambda () (bin+ 1 2)))))
+(compile '(begin
+          (define testOP (lambda (x . y) (if (null? y) x (bin+ x (apply testOP y)) )))
+          (apply testOP '(1 1 1))))

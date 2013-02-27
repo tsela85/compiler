@@ -31,13 +31,13 @@
           ((tag? 'define pe) (code-gen-define pe))
           ((tag? 'pvar pe) (code-gen-pvar pe))
           ((tag? 'bvar pe) (code-gen-bvar pe))
-          ((or (tag? 'tc-applic pe) (tag? 'applic pe)) (code-gen-applic pe))
+;          ((or (tag? 'tc-applic pe) (tag? 'applic pe)) (code-gen-applic pe))
           ((tag? 'lambda-simple pe) (code-gen-lambda-s pe))
           ((tag? 'lambda-variadic pe) (code-gen-lambda-var pe))
           ((tag? 'lambda-opt pe) (code-gen-lambda-opt pe))
 
-;          ((tag? 'tc-applic pe) (code-gen-tc-applic2 pe))
-;          ((tag? 'applic pe) (code-gen-applic pe))
+          ((tag? 'tc-applic pe) (code-gen-tc-applic2 pe))
+          ((tag? 'applic pe) (code-gen-applic pe))
           (else "not implemented")
           )))
 
@@ -170,6 +170,7 @@ error:
           ((vector? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((char? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
           ((null? (cadr e)) (string-append "MOV(R0," (number->string (lookup (cadr e) const-list)) ");"))
+                  ((eq? (cadr e) void-object) (string-append "MOV(R0,SOB_VOID);"))
           (else 'error-code-gen-const))))
 
 (define code-gen-boolean
@@ -542,16 +543,20 @@ error:
                "JUMP_NE(error);" nl
                "PUSH(INDD(R0,IMM(1)));//push closure env" nl
                "//tc-applic changes" nl
+               "MOV(R3,FPARG(IMM(-2))); //R3->old fp " nl
                "PUSH(FPARG(IMM(-1))); //pushing to the top of the frame  the ret of the old frame" nl
-               "MOV(R1,FPARG(-2)); //R1<-prev frame fp" nl
-               "printf(\"old FP %ld \\n\",R1); //TODO: remove" nl
+               "MOV(R1,FP); //R1<-current fp" nl
+               "SUB(R1,FPARG(1)); //FP - old amount of args" nl
+               "SUB(R1,IMM(4)); //minus the: num of args, env, ret, old fp" nl
                "MOV(R2,STARG(1)); //R2<- amount of current args" nl
                "//copy current frame to old frame" nl
                "for(i=0; i < R2 + 3; i++) {" nl
                "   MOV(STACK(R1 + i),LOCAL(i));" nl
                "}" nl
-               "MOV(FP,R1); //update fp" nl
-               "MOV(SP,FP + R2 + 3); //SP<- old fp + args count + 3" nl
+;               "MOV(FP,R1); //update fp" nl
+;               "MOV(SP,FP + R2 + 3); //SP<- old fp + args count + 3" nl
+               "MOV(FP,R3); //update fp" nl
+               "MOV(SP,R1 + R2 + 3); //SP<- old fp + args count + 3" nl
                "JUMPA(INDD(R0,2)); //tc-applic jump to closure code"nl
                ))))))
 
