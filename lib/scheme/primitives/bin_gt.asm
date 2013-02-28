@@ -15,11 +15,11 @@ BIN_GT:
         JUMP_NE(BIN_GT_NOT_A_INTEGER) ;
         MOV(R0,IMM(SOB_BOOLEAN_TRUE));
         CMP(INDD(FPARG(3),1),INDD(FPARG(2),1));
-        JUMP_GT(BOOLEAN_IS_A_BOOLEAN);
+        JUMP_GT(BIN_GT_IS_A_GT);
         MOV(R0,IMM(SOB_BOOLEAN_FALSE))        ;
 BIN_GT_IS_A_GT:
         POP(FP);
-        RETURN;        RETURN;
+        RETURN;
 BIN_GT_NOT_VALID_ARGUMENTS:
         SHOW("BIN_GT -not a valid number of args",FPARG(1)) ;
         STOP_MACHINE ;

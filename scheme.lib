@@ -35,6 +35,7 @@
 
 //Tom & Eitan primitives
 #include "lib/scheme/write_sob_no_void.asm"
+#include "lib/scheme/primitives/string_compre.asm"
 
 #include "lib/scheme/primitives/bin_plus.asm"
 #include "lib/scheme/primitives/bin_minus.asm"

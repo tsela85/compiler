@@ -594,7 +594,7 @@ error:
           (code-gen-prim 'bin* "BIN_MUL") nl
            (code-gen-prim 'bin=? "BIN_EQ") nl
            (code-gen-prim 'bin<? "BIN_GT") nl
-           (code-gen-prim 'reminder "REMINDER") nl
+           (code-gen-prim 'remainder "REMINDER") nl
 
           (code-gen-prim 'cons "CONS") nl
           (code-gen-prim 'car "CAR") nl

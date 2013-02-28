@@ -461,13 +461,13 @@
 
 (define integer? number?)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (define number->string                                                                                                          ;;
-;;   (letrec ((number->list (lambda (number)                                                                                       ;;
-;;                            (if (< number 10) (list number)                                                                      ;;
-;;                                (append (number->list (/ (- number (remainder number 10)) 10)) (list (remainder number 10))))))) ;;
-;;     (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))                                   ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define number->string
+  (letrec ((number->list (lambda (number)
+                           (if (< number 10) (list number)
+                               (append (number->list (/ (- number (remainder number 10)) 10)) (list (remainder number 10)))))))
+    (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))
+
 
 
 (and
@@ -498,12 +498,12 @@
      (= n (string-length (make-string n))))
    (let ((n 10000))
      (= n (vector-length (make-vector n))))
-;   (let* ((v (make-vector 3))
-;          (vs! (lambda (i x) (vector-set! v i x))))
-;     (vs! 0 'a)
-;     (vs! 1 234)
-;     (vs! 2 #\P)
-;     (equal? v '#(a 234 #\P)))
+   (let* ((v (make-vector 3))
+          (vs! (lambda (i x) (vector-set! v i x))))
+     (vs! 0 'a)
+     (vs! 1 234)
+     (vs! 2 #\P)
+     (equal? v '#(a 234 #\P)))
    (let ((p (cons 'a 'b)))
      (set-car! p 'just)
      (set-cdr! p 'fine)
