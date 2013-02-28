@@ -461,13 +461,13 @@
 
 (define integer? number?)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (define number->string                                                                                                          ;;
-;;   (letrec ((number->list (lambda (number)                                                                                       ;;
-;;                            (if (< number 10) (list number)                                                                      ;;
-;;                                (append (number->list (/ (- number (remainder number 10)) 10)) (list (remainder number 10))))))) ;;
-;;     (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))                                   ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define number->string
+  (letrec ((number->list (lambda (number)
+                           (if (< number 10) (list number)
+                               (append (number->list (/ (- number (remainder number 10)) 10)) (list (remainder number 10)))))))
+    (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))
+
 
 
 (and
