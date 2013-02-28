@@ -473,10 +473,10 @@
 
 (define let?
   (lambda (sexpr)
-    (and (pair? sexpr) (equal? (car sexpr) 'let) (pair? (cdr sexpr))(pair? (cddr sexpr))(pair? (cadr sexpr)) (andmap (lambda(x)
+    (and (pair? sexpr) (equal? (car sexpr) 'let) (pair? (cdr sexpr))(pair? (cddr sexpr))(or (null? (cadr sexpr)) (and (pair? (cadr sexpr)) (andmap (lambda(x)
                                                                                                                        (and (pair? x)
                                                                                                                             (= (length x) 2)))
-                                                                                                                     (cadr sexpr)))))
+                                                                                                                     (cadr sexpr)))))))
 (define expand-let
  (lambda (sexpr)
    (let ((args (map car (cadr sexpr)))
