@@ -32,3 +32,4 @@
 			  (* n r))))))
     (lambda (n)
       (fact-1 n 1))))
+(fact 5)

@@ -1,1 +1,1 @@
-(string=? "abc" (string-reverse (string-reverse "abc")))
+(string=?? "Hello World!" (list->string (string->list "Hello World!")))                           

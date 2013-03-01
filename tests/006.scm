@@ -12,3 +12,4 @@
       (equal? (((((((((((apply p1 s) p1) p1) p1) p1) p1) p1) p1) p1) p1)
 	       list)
 	      s))))
+(test)
