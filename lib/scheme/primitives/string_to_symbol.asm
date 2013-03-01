@@ -40,10 +40,9 @@ STRING_TO_SYMBOL_SYM_NOT_FOUND:
         PUSH(R0);
         CALL(MAKE_SOB_SYMBOL);
         DROP(IMM(1));
-
+        MOV(R1,R0)  ;
 STRING_TO_SYMBOL_END:
         MOV(R0,R1)              ;
-
         POP(R2);
         POP(R1);
         POP(FP);
