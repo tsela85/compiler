@@ -45,7 +45,7 @@
       (lambda (x)
         (f (lambda args
              (apply (x x) args))))))))
-(define Yn
+(define yn
   (lambda fs
     (let ((ms (map
                   (lambda (fi)

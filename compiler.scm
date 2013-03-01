@@ -549,7 +549,7 @@
 
 (define with (lambda (s f) (apply f s)))
 
-(define Yn
+(define yn
   (lambda fs
     (let ((ms (map
                   (lambda (fi)
@@ -570,7 +570,7 @@
                (fs `((lambda ,names ,@exprs)
                      ,@(map (lambda (rib) `(lambda ,names ,(cadr rib)))
                          ribs))))
-          `(Yn ,@fs))))))
+          `(yn ,@fs))))))
 
 (define (dedupe e)
   (if (null? e) '()
