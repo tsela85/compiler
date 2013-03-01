@@ -13,7 +13,7 @@
 #define Giga(n) (Mega(n) << 10)
 
 
-#define RAM_SIZE Mega(10) //TODO: 100
+#define RAM_SIZE Mega(400) //TODO: 100
 #define STACK_SIZE Mega(10) //TODO: 64
 
 #define WORD_SIZE (sizeof(long))
