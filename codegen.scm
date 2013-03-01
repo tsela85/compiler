@@ -1,6 +1,113 @@
 (load "compiler.scm")
 (load "symbol.scm")
 
+(define compile-scheme-file
+  (lambda (file)
+    (let ((sexprs (tokens->sexprs (file->tokens file)))
+	      (sup-sexprs (tokens->sexprs (file->tokens "common-scheme.scm"))))
+	(initialize)
+    (add-primitives prims)
+	(map (lambda (x) (find-consts (test x))) sup-sexprs)
+	(map (lambda (x) (find-consts (test x))) sexprs)
+	(create-buckets symbols)
+	
+	(if (file-exists? "out.c")
+        (delete-file "out.c"))
+    (let* ((out (open-output-file "out.c"))
+           (mem-array (list->c-array (append const-list buckets)))
+           (sup-body (apply string-append (map (lambda(x) 
+	                                            (code-gen (test x))) sup-sexprs)))
+		   (body (apply string-append (map (lambda(x) 
+	                                        (string-append (code-gen (test x))
+											 "PUSH(R0);" nl
+											 "CALL(WRITE_SOB);" nl
+											 "DROP(IMM(1));" nl
+											 "CALL(NEWLINE);")) sexprs)))
+           (code (string-append
+"#define  DO_SHOW 1
+#include <stdio.h>
+#include <stdlib.h>
+#include \"cisc.h\"
+
+int main()
+{
+  START_MACHINE;
+  int consts[]=" mem-array ";" nl
+"  memcpy(&machine->mem[10],consts,sizeof(consts));
+   MOV(ADDR(0), IMM("(number->string next-mem)"));
+  void print_stack(char* comment){
+        int i;
+        printf(\"printing stack, FP: %d SP: %d %\\n\", (int)(FP), (int)(SP), comment);
+        for(i=SP+5; i>=0; --i){
+        if(SP == i){
+                printf(\"SP\");
+        }
+        if(FP == i){
+                printf(\"FP\");
+        }
+        printf(\"\\t element %d: \", i);
+        SHOW(\" \", STACK(i));
+        }
+}
+void print_heap(){
+        int i;
+        printf(\"printing heap\\n\");
+        for (i=ADDR(0); i>=0; i--){
+                printf(\"\\t element %d: \", i);
+        SHOW(\" \",ADDR(i));
+        }
+}
+  #define SOB_VOID 10
+  #define SOB_NIL 11
+  #define SOB_BOOLEAN_FALSE 12
+  #define SOB_BOOLEAN_TRUE 14
+
+  JUMP(CONTINUE);
+  #include \"char.lib\"
+  #include \"io.lib\"
+  #include \"math.lib\"
+  #include \"string.lib\"
+  #include \"system.lib\"
+  #include \"scheme.lib\"
+
+  CONTINUE:" nl
+
+  "PUSH(0);" nl
+  "PUSH(0);" nl
+  "PUSH(0);" nl
+  "PUSH(FP);" nl
+  "MOV(FP,SP);" nl
+  "char* fvar;" nl
+  "int i,j;" nl
+  (code-gen-primitives) nl
+  sup-body nl
+  body nl
+
+"  POP(FP);
+//  print_stack(\"dd\");
+//  print_heap(\"dd\");
+
+
+  STOP_MACHINE;
+
+  return 0;
+error_no_val:
+  printf(\"ERROR - FVAR HAS NO VALUE\\n\");
+  printf(\"fvar = %s\\n\",fvar);
+  STOP_MACHINE;
+  return 1;
+error:
+  printf(\"ERROR - NOT A CLOSURE\\n\");
+  STOP_MACHINE;
+  return 1;}"))
+                   )
+                   (display code out)
+                   (close-output-port out)))))
+	
+	
+	
+	
+	 
 
 (define ^^label
 (lambda (name)
