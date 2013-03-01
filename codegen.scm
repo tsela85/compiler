@@ -320,7 +320,7 @@ error:
             ""
             (string-append (code-gen (car e)) nl
                            (if (null? (cdr e)) ""
-						   (string-append "PUSH(R0);" nl
+                                                   (string-append "PUSH(R0);" nl
                            "CALL(WRITE_SOB_NO_VOID);" nl
                            "DROP(IMM(1));" nl))
                            (code-gen-seq-helper (cdr e))))))
