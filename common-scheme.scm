@@ -1,5 +1,4 @@
 (compile '(begin
-(define = bin=?)  ;;; change!
 (define not (lambda (x) (if x #f #t)))
 (define list (lambda x x))
 (define add1 (lambda (n) (bin+ n 1)))
@@ -61,6 +60,11 @@
       (apply (car ms) ms))))
 
 
+(define =
+    (lambda (a . s)
+      (if (null? s)
+          #t
+          (andmap (lambda (x) (bin=? x a)) s))))
 
 (define +
   (letrec ((loop
@@ -468,7 +472,11 @@
                                (append (number->list (/ (- number (remainder number 10)) 10)) (list (remainder number 10)))))))
     (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))
 
-
+(define =
+  (lambda (a . s)
+    (if (null? s)
+        #t
+        (andmap (lambda (x) (bin=? x a)) s))))
 
 (and
    (boolean? #t)
@@ -532,5 +540,5 @@
    (> 5 4 3 2 1)
    (equal? '(2 . 3) (apply cons '(2 3)))
    )
-
+(= 1 1 2 1)
 ))

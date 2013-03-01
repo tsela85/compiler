@@ -57,6 +57,7 @@
 "#define  DO_SHOW 1
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include \"cisc.h\"
 
 
@@ -67,7 +68,7 @@ int main()
   int consts[]=" mem-array ";" nl
 "  memcpy(&machine->mem[10],consts,sizeof(consts));
    MOV(ADDR(0), IMM("(number->string next-mem)"));
-  void print_stack(char* comment){
+/*  void print_stack(char* comment){
         int i;
         printf(\"printing stack, FP: %d SP: %d %\\n\", (int)(FP), (int)(SP), comment);
         for(i=SP+5; i>=0; --i){
@@ -88,7 +89,7 @@ void print_heap(){
                 printf(\"\\t element %d: \", i);
         SHOW(\" \",ADDR(i));
         }
-}
+}*/
   #define SOB_VOID 10
   #define SOB_NIL 11
   #define SOB_BOOLEAN_FALSE 12
