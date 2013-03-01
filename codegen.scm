@@ -4,7 +4,7 @@
 (define compile-scheme-file
   (lambda (file)
     (let ((sexprs (tokens->sexprs (file->tokens file)))
-              (sup-sexprs (tokens->sexprs (file->tokens "common-scheme-original.scm"))))
+              (sup-sexprs (tokens->sexprs (file->tokens "common-scheme.scm"))))
         (initialize)
     (add-primitives prims)
         (map (lambda (x) (find-consts (test x))) sup-sexprs)
@@ -705,7 +705,7 @@ error:
           (code-gen-prim 'bin* "BIN_MUL") nl
            (code-gen-prim 'bin=? "BIN_EQ") nl
            (code-gen-prim 'bin<? "BIN_GT") nl
-           (code-gen-prim 'remainder "REMINDER") nl
+           (code-gen-prim 'remainder "REMAINDER") nl
 
           (code-gen-prim 'cons "CONS") nl
           (code-gen-prim 'car "CAR") nl

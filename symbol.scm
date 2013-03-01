@@ -2,7 +2,7 @@
 
 (define symbols '())
 (define buckets '())
-(define prims '(bin+ bin- bin* bin/ bin=? bin<? reminder
+(define prims '(bin+ bin- bin* bin/ bin=? bin<? remainder
                cons car cdr set-car! set-cdr!
                procedure? vector? symbol? string? char?
                number? boolean? pair? null? eq? zero?
@@ -42,9 +42,9 @@
           ((pair? pe) (add-const-pair pe consts))
           ((symbol? pe) (add-const-sym pe consts))
           ((number? pe) (add-const-num pe consts))
-		  ((char? pe) (add-const-char pe consts))
+                  ((char? pe) (add-const-char pe consts))
           ((string? pe) (add-const-string pe consts))
-		  ((vector? pe) (add-const-vector pe consts))
+                  ((vector? pe) (add-const-vector pe consts))
           (else 'error)
           )))
           ))
@@ -67,7 +67,7 @@
         (set! const-list (append const-list (list (list next-mem pe (cons 799345 (cons (length chars) chars))))))
         (set! next-mem (+ next-mem 2 (length chars)))
         str-addr)))
-		
+
 (define add-const-vector
   (lambda (pe consts)
     (let ((vec-items (map (lambda(x) (add-const x consts)) (vector->list pe)))
@@ -93,7 +93,7 @@
                 (set! const-list (append const-list (list (list next-mem pe (list 945311 pe)))))
                 (set! next-mem (+ next-mem 2))
                 num-addr)))
-				
+
 (define add-const-char
   (lambda (pe consts)
         (let ((char-addr next-mem))

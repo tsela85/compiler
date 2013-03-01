@@ -1,10 +1,10 @@
-/* reminder.asm
+/* remainder.asm
 *
 *  basic -
  *
  *      Programmer: Tom & Eitan, 2013
  */
-REMINDER:
+REMAINDER:
         PUSH(FP);
         MOV(FP, SP);
         CMP(FPARG(1),IMM(2))     ; //checks num of args = 2
@@ -21,12 +21,12 @@ REMINDER:
         POP(FP);
         RETURN;
 REM_NOT_VALID_ARGUMENTS:
-        SHOW("REMINDER -not a valid number of args",FPARG(1)) ;
+        SHOW("REMAINDER -not a valid number of args",FPARG(1)) ;
         STOP_MACHINE ;
         return 1;
 REM_NOT_A_INTEGER:
-        SHOW("REMINDER - arg is not a integer type ",(long int)0);
-        SHOW("REMINDER - arg 1 type ",INDD(FPARG(2),0)) ;
-        SHOW("REMINDER - arg 2 type ",INDD(FPARG(3),0)) ;
+        SHOW("REMAINDER - arg is not a integer type ",(long int)0);
+        SHOW("REMAINDER - arg 1 type ",INDD(FPARG(2),0)) ;
+        SHOW("REMAINDER - arg 2 type ",INDD(FPARG(3),0)) ;
         STOP_MACHINE ;
         return 1;
