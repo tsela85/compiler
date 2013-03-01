@@ -319,9 +319,10 @@ error:
     (if (null? e)
             ""
             (string-append (code-gen (car e)) nl
-                           "PUSH(R0);" nl
+                           (if (null? (cdr e)) ""
+						   (string-append "PUSH(R0);" nl
                            "CALL(WRITE_SOB_NO_VOID);" nl
-                           "DROP(IMM(1));" nl
+                           "DROP(IMM(1));" nl))
                            (code-gen-seq-helper (cdr e))))))
 
 (define code-gen-or

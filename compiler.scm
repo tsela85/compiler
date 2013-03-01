@@ -374,7 +374,7 @@
 (define define?
   (lambda (sexpr)
     (and (pair? sexpr)(equal? (car sexpr) 'define)(pair? (cdr sexpr))(pair? (cddr sexpr)) (or (and (var? (cadr sexpr)) (null? (cdddr sexpr)))
-                                                                                              (and (list? (cadr sexpr)) (var? (caadr sexpr)) (null? (cdddr sexpr)))))))
+                                                                                              (and (list? (cadr sexpr)) (var? (caadr sexpr)))))))
 
 (define parse-define
   (lambda (sexpr)
