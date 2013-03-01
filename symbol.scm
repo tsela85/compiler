@@ -2,7 +2,7 @@
 
 (define symbols '())
 (define buckets '())
-(define prims '(bin+ bin- bin* bin/ bin=? bin<? reminder
+(define prims '(bin+ bin- bin* bin/ bin=? bin<? remainder
                cons car cdr set-car! set-cdr!
                procedure? vector? symbol? string? char?
                number? boolean? pair? null? eq? zero?

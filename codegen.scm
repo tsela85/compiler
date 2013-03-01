@@ -3,31 +3,29 @@
 
 (define compile-scheme-file
   (lambda (file)
-    (let ((sexprs (tokens->sexprs (file->tokens file)))
-	      (sup-sexprs (tokens->sexprs (file->tokens "common-scheme.scm"))))
+    (let* ((sexprs (tokens->sexprs (file->tokens file)))
+	      (sup-sexprs (tokens->sexprs (file->tokens "common-scheme.scm")))
+		  (code-sexprs (append sup-sexprs sexprs))
+		  )
 	(initialize)
     (add-primitives prims)
-	(map (lambda (x) (find-consts (test x))) sup-sexprs)
-	(map (lambda (x) (find-consts (test x))) sexprs)
+	(map (lambda (x) (find-consts (test x))) code-sexprs)
 	(create-buckets symbols)
 	
 	(if (file-exists? "out.c")
         (delete-file "out.c"))
     (let* ((out (open-output-file "out.c"))
            (mem-array (list->c-array (append const-list buckets)))
-           (sup-body (apply string-append (map (lambda(x) 
-	                                            (code-gen (test x))) sup-sexprs)))
-		   (body (apply string-append (map (lambda(x) 
-	                                        (string-append (code-gen (test x))
-											 "PUSH(R0);" nl
-											 "CALL(WRITE_SOB);" nl
-											 "DROP(IMM(1));" nl
-											 "CALL(NEWLINE);")) sexprs)))
-           (code (string-append
+     ;      (sup-body (apply string-append (map (lambda(x) 
+	  ;                                          (code-gen (test x))) sup-sexprs)))
+	  (body (append-code code-sexprs))
+	  (code (string-append
 "#define  DO_SHOW 1
 #include <stdio.h>
 #include <stdlib.h>
 #include \"cisc.h\"
+
+
 
 int main()
 {
@@ -80,13 +78,11 @@ void print_heap(){
   "char* fvar;" nl
   "int i,j;" nl
   (code-gen-primitives) nl
-  sup-body nl
   body nl
 
 "  POP(FP);
 //  print_stack(\"dd\");
 //  print_heap(\"dd\");
-
 
   STOP_MACHINE;
 
@@ -103,6 +99,22 @@ error:
                    )
                    (display code out)
                    (close-output-port out)))))
+			
+			
+			
+			
+
+			
+(define append-code
+  (lambda (string-list)
+    (if (null? string-list)
+	    ""
+		(string-append (code-gen (test (car string-list)))
+		               "PUSH(R0);" nl
+					   "CALL(WRITE_SOB_NO_VOID);" nl
+                       "DROP(IMM(1));" nl
+                		(append-code (cdr string-list))))))
+           
 	
 	
 	
@@ -224,9 +236,7 @@ void print_heap(){
 "  POP(FP);
 //  print_stack(\"dd\");
 //  print_heap(\"dd\");
-  PUSH(R0);
-  CALL(WRITE_SOB);
-  DROP(IMM(1));
+
 
   STOP_MACHINE;
 
@@ -701,7 +711,7 @@ error:
           (code-gen-prim 'bin* "BIN_MUL") nl
            (code-gen-prim 'bin=? "BIN_EQ") nl
            (code-gen-prim 'bin<? "BIN_GT") nl
-           (code-gen-prim 'reminder "REMINDER") nl
+           (code-gen-prim 'remainder "REMINDER") nl
 
           (code-gen-prim 'cons "CONS") nl
           (code-gen-prim 'car "CAR") nl
