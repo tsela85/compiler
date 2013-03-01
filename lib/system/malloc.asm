@@ -9,6 +9,8 @@
         PUSH(FP);
         MOV(FP, SP);
         CMP(ADDR(0),RAM_SIZE)   ;
+//        if(ADDR(0) == 206192)   ;
+//                printf("malloc is: %d\n",ADDR(0)) ;
         JUMP_GE(MALLOC_HEAP_TOO_SMALL)               ;
         PUSH(R1);
         MOV(R1, FPARG(0));

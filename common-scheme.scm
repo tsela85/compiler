@@ -58,6 +58,12 @@
                 fs)))
       (apply (car ms) ms))))
 
+(define =
+  (lambda (a . s)
+    (if (null? s)
+        #t
+        (andmap (lambda (x) (bin=? x a)) s))))
+
 (define +
   (letrec ((loop
             (lambda (s)
@@ -234,6 +240,7 @@
   (order
    (lambda (ch1 ch2)
      (char>=? (char-upcase ch1) (char-upcase ch2)))))
+
 (define string->list
   (letrec ((loop
             (lambda (str n s)
@@ -463,9 +470,3 @@
                            (if (< number 10) (list number)
                                (append (number->list (/ (- number (remainder number 10)) 10)) (list (remainder number 10)))))))
     (list->string (map (lambda (number) (integer->char (+ number 48))) (number->list 123)))))
-
-(define =
-  (lambda (a . s)
-    (if (null? s)
-        #t
-        (andmap (lambda (x) (bin=? x a)) s))))

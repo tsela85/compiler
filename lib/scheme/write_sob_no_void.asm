@@ -7,7 +7,8 @@
  * Edited: Eitan & TOM,2013
  */
 
- WRITE_SOB_NO_VOID:
+WRITE_SOB_NO_VOID:
+//        CALL(NEWLINE)                ;
   MOV(R0, STARG(0));
   MOV(R0, IND(R0));
   CMP(R0, IMM(T_VOID));

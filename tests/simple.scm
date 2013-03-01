@@ -1,1 +1,1 @@
-(+ 1 2)
+(string=? "abc" (string-reverse (string-reverse "abc")))

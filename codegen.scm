@@ -4,7 +4,7 @@
 (define compile-scheme-file
   (lambda (file)
     (let* ((sexprs (tokens->sexprs (file->tokens file)))
-              (sup-sexprs (tokens->sexprs (file->tokens "common-scheme-eitan.scm")))
+              (sup-sexprs (tokens->sexprs (file->tokens "common-scheme.scm")))
                   (code-sexprs (append sup-sexprs sexprs))
                   )
         (initialize)
@@ -112,8 +112,8 @@ error:
             ""
                 (string-append (code-gen (test (car string-list)))
                                "PUSH(R0);" nl
-                                           "CALL(WRITE_SOB_NO_VOID);" nl
-                       "DROP(IMM(1));" nl
+                               "CALL(WRITE_SOB_NO_VOID);" nl
+                               "DROP(IMM(1));" nl
                                 (append-code (cdr string-list))))))
 
 
