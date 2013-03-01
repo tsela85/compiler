@@ -1,8 +1,8 @@
 /* scheme/write_sob_closure.asm
- * Take a pointer to a Scheme closure object, and 
+ * Take a pointer to a Scheme closure object, and
  * prints (to stdout) the character representation
  * of that object.
- * 
+ *
  * Programmer: Mayer Goldberg, 2010
  */
 
@@ -77,7 +77,7 @@
   DROP(1);
   PUSH(IMM('>'));
   CALL(PUTCHAR);
-  DROP(1);
+        DROP(1);
+        CALL(NEWLINE)           ;
   POP(FP);
   RETURN;
-

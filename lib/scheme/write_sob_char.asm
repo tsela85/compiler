@@ -1,8 +1,8 @@
 /* scheme/write_sob_char.asm
- * Take a pointer to a Scheme char object, and 
+ * Take a pointer to a Scheme char object, and
  * prints (to stdout) the character representation
  * of that object.
- * 
+ *
  * Programmer: Mayer Goldberg, 2010
  */
 
@@ -114,8 +114,7 @@
   PUSH(IMM('e'));
   CALL(PUTCHAR);
   DROP(5);
- L_WRITE_SOB_CHAR_EXIT:
+L_WRITE_SOB_CHAR_EXIT:
   POP(R1);
   POP(FP);
   RETURN;
-  

@@ -5,8 +5,9 @@
 
 ;;; should return ((#t) (#t) (#t))
 
-(compile '(let ()
-    ((lambda s
-       (let ()
-         ((lambda s s) s s s)))
-     #t)))
+(compile '((let ()
+              ((lambda s
+                 (let ()
+                   ((lambda s s) s s s)))
+               #t))
+))

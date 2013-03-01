@@ -1,8 +1,8 @@
 /* scheme/write_sob_integer.asm
- * Take a pointer to a Scheme integer object, and 
+ * Take a pointer to a Scheme integer object, and
  * prints (to stdout) the character representation
  * of that object.
- * 
+ *
  * Programmer: Mayer Goldberg, 2010
  */
 
@@ -13,7 +13,7 @@
   MOV(R0, INDD(R0, 1));
   PUSH(R0);
   CALL(WRITE_INTEGER);
-  DROP(1);
+        DROP(1);
+          CALL(NEWLINE);
   POP(FP);
   RETURN;
-
