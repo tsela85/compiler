@@ -1,0 +1,13 @@
+(define (find-max ls)
+  (letrec ((find-max$ (lambda (ls k)
+    (if (null? ls)
+        (k -1)
+        (find-max$ 
+          (cdr ls)
+          (lambda (max)
+            (if (> max (car ls))
+                (k max)
+                (k (car ls))))))))
+    (id (lambda (x) x)))
+  (find-max$ ls id)))
+(find-max '(5 7 8 3))
