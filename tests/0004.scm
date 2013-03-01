@@ -4,7 +4,7 @@
 ;;;
 ;;; Programmer: Mayer Goldberg, 2010
 
-(and
+
  (= 4 (sub1 5))
  (= -5 (sub1 -4))
  (= 5 (add1 4))
@@ -59,4 +59,4 @@
  (eq? 'a (list-ref '(x y z a b c) 3))
  (= 10 (max 4 3 2 1 6 7 8 10))
  (zero? (min 4 5 6 0 7 8 9))
- )
+ 

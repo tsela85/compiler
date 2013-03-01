@@ -378,8 +378,12 @@
 
 (define parse-define
   (lambda (sexpr)
-    (cond ((pair? (cadr sexpr)) (list 'define (parse (caadr sexpr))(parse-lambda (list 'lambda (cdadr sexpr) (caddr sexpr)))))
+    (cond ((pair? (cadr sexpr)) (parse (expand-mit sexpr)))
           (else (list 'define (parse (cadr sexpr)) (parse (caddr sexpr)))))))
+		  
+(define expand-mit
+  (lambda (sexpr)
+    `(define ,(caadr sexpr) (lambda ,(cdadr sexpr) ,@(cddr sexpr)))))
 
 ;;; applic
 
