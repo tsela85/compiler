@@ -1,0 +1,10 @@
+(define (for f n)
+    (if (> n 0) (for f (- n 1)))
+    (f n))
+(define f
+    (let ((x (cons '() '())))
+        (lambda (i)
+            (set-car! x (cons i (cdr x)))
+            (set-cdr! x (cons i (car x)))
+            (cdr x))))
+(for f 5)

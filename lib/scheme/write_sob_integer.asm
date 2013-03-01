@@ -14,6 +14,5 @@
   PUSH(R0);
   CALL(WRITE_INTEGER);
         DROP(1);
-          CALL(NEWLINE);
   POP(FP);
   RETURN;

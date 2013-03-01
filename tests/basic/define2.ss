@@ -1,0 +1,1 @@
+(define x 9) (define y x) (define x 60) (+ x y)
