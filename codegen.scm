@@ -4,25 +4,26 @@
 (define compile-scheme-file
   (lambda (file)
     (let* ((sexprs (tokens->sexprs (file->tokens file)))
-	      (sup-sexprs (tokens->sexprs (file->tokens "common-scheme.scm")))
-		  (code-sexprs (append sup-sexprs sexprs))
-		  )
-	(initialize)
+              (sup-sexprs (tokens->sexprs (file->tokens "common-scheme-eitan.scm")))
+                  (code-sexprs (append sup-sexprs sexprs))
+                  )
+        (initialize)
     (add-primitives prims)
-	(map (lambda (x) (find-consts (test x))) code-sexprs)
-	(create-buckets symbols)
-	
-	(if (file-exists? "out.c")
+        (map (lambda (x) (find-consts (test x))) code-sexprs)
+        (create-buckets symbols)
+
+        (if (file-exists? "out.c")
         (delete-file "out.c"))
     (let* ((out (open-output-file "out.c"))
            (mem-array (list->c-array (append const-list buckets)))
-     ;      (sup-body (apply string-append (map (lambda(x) 
-	  ;                                          (code-gen (test x))) sup-sexprs)))
-	  (body (append-code code-sexprs))
-	  (code (string-append
+     ;      (sup-body (apply string-append (map (lambda(x)
+          ;                                          (code-gen (test x))) sup-sexprs)))
+          (body (append-code code-sexprs))
+          (code (string-append
 "#define  DO_SHOW 1
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include \"cisc.h\"
 
 int main()
@@ -76,7 +77,7 @@ void print_heap(){
   "char* fvar;" nl
   "int i,j;" nl
   (code-gen-primitives) nl
- 
+
   body nl
 
 "  POP(FP);
@@ -99,27 +100,27 @@ error:
                    )
                    (display code out)
                    (close-output-port out)))))
-			
-			
-			
-			
 
-			
+
+
+
+
+
 (define append-code
   (lambda (string-list)
     (if (null? string-list)
-	    ""
-		(string-append (code-gen (test (car string-list)))
-		               "PUSH(R0);" nl
-					   "CALL(WRITE_SOB_NO_VOID);" nl
+            ""
+                (string-append (code-gen (test (car string-list)))
+                               "PUSH(R0);" nl
+                                           "CALL(WRITE_SOB_NO_VOID);" nl
                        "DROP(IMM(1));" nl
-                		(append-code (cdr string-list))))))
-           
-	
-	
-	
-	
-	 
+                                (append-code (cdr string-list))))))
+
+
+
+
+
+
 
 (define ^^label
 (lambda (name)
