@@ -58,9 +58,6 @@
                 fs)))
       (apply (car ms) ms))))
 
-
-
-
 (define +
   (letrec ((loop
             (lambda (s)
@@ -472,5 +469,3 @@
     (if (null? s)
         #t
         (andmap (lambda (x) (bin=? x a)) s))))
-
-))

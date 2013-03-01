@@ -4,29 +4,30 @@
 (define compile-scheme-file
   (lambda (file)
     (let ((sexprs (tokens->sexprs (file->tokens file)))
-	      (sup-sexprs (tokens->sexprs (file->tokens "common-scheme.scm"))))
-	(initialize)
+              (sup-sexprs (tokens->sexprs (file->tokens "common-scheme-original.scm"))))
+        (initialize)
     (add-primitives prims)
-	(map (lambda (x) (find-consts (test x))) sup-sexprs)
-	(map (lambda (x) (find-consts (test x))) sexprs)
-	(create-buckets symbols)
-	
-	(if (file-exists? "out.c")
+        (map (lambda (x) (find-consts (test x))) sup-sexprs)
+        (map (lambda (x) (find-consts (test x))) sexprs)
+        (create-buckets symbols)
+
+        (if (file-exists? "out.c")
         (delete-file "out.c"))
     (let* ((out (open-output-file "out.c"))
            (mem-array (list->c-array (append const-list buckets)))
-           (sup-body (apply string-append (map (lambda(x) 
-	                                            (code-gen (test x))) sup-sexprs)))
-		   (body (apply string-append (map (lambda(x) 
-	                                        (string-append (code-gen (test x))
-											 "PUSH(R0);" nl
-											 "CALL(WRITE_SOB);" nl
-											 "DROP(IMM(1));" nl
-											 "CALL(NEWLINE);")) sexprs)))
+           (sup-body (apply string-append (map (lambda(x)
+                                                    (code-gen (test x))) sup-sexprs)))
+                   (body (apply string-append (map (lambda(x)
+                                                (string-append (code-gen (test x))
+                                                                                         "PUSH(R0);" nl
+                                                                                         "CALL(WRITE_SOB);" nl
+                                                                                         "DROP(IMM(1));" nl
+                                                                                         "CALL(NEWLINE);")) sexprs)))
            (code (string-append
 "#define  DO_SHOW 1
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include \"cisc.h\"
 
 int main()
@@ -35,7 +36,7 @@ int main()
   int consts[]=" mem-array ";" nl
 "  memcpy(&machine->mem[10],consts,sizeof(consts));
    MOV(ADDR(0), IMM("(number->string next-mem)"));
-  void print_stack(char* comment){
+/*  void print_stack(char* comment){
         int i;
         printf(\"printing stack, FP: %d SP: %d %\\n\", (int)(FP), (int)(SP), comment);
         for(i=SP+5; i>=0; --i){
@@ -56,7 +57,7 @@ void print_heap(){
                 printf(\"\\t element %d: \", i);
         SHOW(\" \",ADDR(i));
         }
-}
+}*/
   #define SOB_VOID 10
   #define SOB_NIL 11
   #define SOB_BOOLEAN_FALSE 12
@@ -80,7 +81,9 @@ void print_heap(){
   "char* fvar;" nl
   "int i,j;" nl
   (code-gen-primitives) nl
+  "//sup-body - start" nl
   sup-body nl
+  "//sup-body - end" nl
   body nl
 
 "  POP(FP);
@@ -103,11 +106,11 @@ error:
                    )
                    (display code out)
                    (close-output-port out)))))
-	
-	
-	
-	
-	 
+
+
+
+
+
 
 (define ^^label
 (lambda (name)
