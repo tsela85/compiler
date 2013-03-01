@@ -12,7 +12,10 @@ WRITE_SOB_NO_VOID:
   MOV(R0, STARG(0));
   MOV(R0, IND(R0));
   CMP(R0, IMM(T_VOID));
-  JUMP_EQ(WRITE_SOB_NO_VOID_IS_VOID); //do not print
+        JUMP_EQ(WRITE_SOB_NO_VOID_IS_VOID); //do not print
+        PUSH(R0)                          ;
+        CALL(NEWLINE)                     ;
+        POP(R0)                           ;
   CMP(R0, IMM(T_NIL));
   JUMP_EQ(WRITE_SOB_NIL);
   CMP(R0, IMM(T_BOOL));
